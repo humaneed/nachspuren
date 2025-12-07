@@ -169,20 +169,6 @@
       touch-action: none;
       background: transparent;
     }
-    .guide-char {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      color: rgba(248,250,252,0.35);
-      font-weight: 700;
-      font-size: 6.8rem;
-      user-select: none;
-      transition: opacity 0.25s ease;
-      text-shadow: 0 0 6px rgba(15,23,42,0.7);
-    }
 
     .buttons-row {
       display: flex;
@@ -227,7 +213,6 @@
 
     @media (min-width: 540px) {
       .board-title { font-size: 1.3rem; }
-      .guide-char { font-size: 7.6rem; }
     }
 
     @media (max-width: 420px) {
@@ -235,7 +220,6 @@
       .board { border-radius: 18px; padding: 8px 9px 10px; }
       .board-title { font-size: 1.15rem; }
       .current-letter-label { font-size: 1.4rem; }
-      .guide-char { font-size: 6.2rem; }
     }
   </style>
 </head>
@@ -259,7 +243,7 @@
         </header>
 
         <div class="controls-row">
-          <span class="pill-label">Zeichen auswählen</span>
+          <span class="pill-label">Zeichen</span>
           <select id="charSelect" class="select"></select>
         </div>
 
@@ -274,7 +258,6 @@
         </div>
 
         <div class="canvas-wrap">
-          <div id="guideChar" class="guide-char">A</div>
           <canvas id="traceCanvas" width="600" height="320"></canvas>
         </div>
 
@@ -297,7 +280,7 @@
   </div>
 
   <script>
-    // ALPHABET nach deutschem System (inkl. Umlaute, ß)
+    // Alphabet (deutsches Druckschrift-ABC + ß)
     const UPPER = "AÄBCDEFGHIJKLMNOÖPQRSTUVWÜXYZ".split("");
     const LOWER = "aäbcdefghijklmnoöpqrstuvwüxyzß".split("");
     const DIGITS = "0123456789".split("");
@@ -347,7 +330,6 @@
     const modeButtons = Array.from(document.querySelectorAll(".mode-btn"));
     const charSelect = document.getElementById("charSelect");
     const currentPair = document.getElementById("currentPair");
-    const guideChar = document.getElementById("guideChar");
     const canvas = document.getElementById("traceCanvas");
     const ctx = canvas.getContext("2d");
     const btnPrev = document.getElementById("btnPrev");
@@ -362,12 +344,14 @@
     let mode = "upper";
     let list = UPPER;
     let index = 0;
+    let currentChar = "A";
     let penColor = "#e5e7eb";
     let drawing = false;
     let lastX = 0;
     let lastY = 0;
-    let guideVisible = true;
+    let showGuide = true;
 
+    // --- Modus & Zeichenwahl ---
     function setMode(newMode) {
       mode = newMode;
       if (mode === "upper") list = UPPER;
@@ -379,7 +363,7 @@
       });
 
       fillCharSelect();
-      setCharByIndex(index || 0);
+      setCharByIndex(0);
     }
 
     function fillCharSelect() {
@@ -397,38 +381,37 @@
       if (i < 0) i = list.length - 1;
       if (i >= list.length) i = 0;
       index = i;
-      const ch = list[index];
+      currentChar = list[index];
       charSelect.value = String(index);
-      const upper = ch.toUpperCase();
-      const lower = ch.toLowerCase();
+
+      const up = currentChar.toUpperCase();
+      const low = currentChar.toLowerCase();
 
       if (mode === "upper") {
-        currentPair.textContent = upper + " " + lower;
-        guideChar.textContent = upper;
+        currentPair.textContent = up + " " + low;
       } else if (mode === "lower") {
-        currentPair.textContent = upper + " " + lower;
-        guideChar.textContent = lower;
+        currentPair.textContent = up + " " + low;
       } else {
-        currentPair.textContent = ch;
-        guideChar.textContent = ch;
+        currentPair.textContent = currentChar;
       }
 
-      updateHints(ch);
+      updateHints();
       clearCanvas();
     }
 
-    function updateHints(ch) {
+    function updateHints() {
       if (mode === "digits") {
-        exampleHint.textContent = DIGIT_EXAMPLES[ch] || ("Zahl " + ch + " schreiben üben.");
-        tipHint.textContent = "Sag die Zahl laut und spure sie langsam nach. Danach suche so viele Dinge im Raum.";
+        exampleHint.textContent = DIGIT_EXAMPLES[currentChar] || ("Zahl " + currentChar + " schreiben üben.");
+        tipHint.textContent = "Sag die Zahl laut und spure sie langsam nach. Suche dann passende Dinge im Raum.";
       } else {
-        const upper = ch.toUpperCase();
+        const upper = currentChar.toUpperCase();
         const base = LETTER_EXAMPLES[upper] || (upper + " schreiben üben.");
         exampleHint.textContent = base;
-        tipHint.textContent = "Sprich den Buchstaben laut, spure ihn langsam nach und achte auf ruhige Handbewegungen.";
+        tipHint.textContent = "Sprich den Buchstaben laut und spure ihn langsam nach – zuerst groß, dann klein.";
       }
     }
 
+    // --- Tafel-Linien + Leitbuchstabe im Canvas ---
     function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
@@ -444,38 +427,72 @@
       const w = canvas.clientWidth || canvas.width;
       const h = canvas.clientHeight || canvas.height;
       ctx.clearRect(0, 0, w, h);
-      // Tafel-Linien (Schreiblinien wie im Heft)
+      drawGuidelinesAndLetter();
+    }
+
+    function drawGuidelinesAndLetter() {
+      const w = canvas.clientWidth || canvas.width;
+      const h = canvas.clientHeight || canvas.height;
+      if (!w || !h) return;
+
+      // 4-Linien-System wie auf dem Poster
       ctx.save();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(226,232,240,0.45)";
-      const blockHeight = h * 0.28;
+      ctx.strokeStyle = "rgba(226,232,240,0.55)";
+
+      const blockHeight = h * 0.32;
       const top = (h - blockHeight) / 2;
       const step = blockHeight / 3;
-      const ys = [top, top + step, top + 2*step, top + 3*step];
 
-      ys.forEach((y, i) => {
-        ctx.setLineDash(i === 0 || i === 3 ? [] : [8,6]);
+      const y0 = top;            // Oberlinie
+      const y1 = top + step;     // Mittellinie
+      const y2 = top + 2*step;   // Grundlinie
+      const y3 = top + 3*step;   // Unterlänge
+
+      const xs = { left: w*0.06, right: w*0.94 };
+
+      [y0, y1, y2, y3].forEach((y, i) => {
         ctx.beginPath();
-        ctx.moveTo(w*0.06, y);
-        ctx.lineTo(w*0.94, y);
+        ctx.setLineDash(i === 0 || i === 3 ? [] : [8,5]);
+        ctx.moveTo(xs.left, y);
+        ctx.lineTo(xs.right, y);
         ctx.stroke();
       });
 
       // Randlinie links
       ctx.setLineDash([4,6]);
       ctx.beginPath();
-      ctx.moveTo(w*0.09, top - step*0.6);
-      ctx.lineTo(w*0.09, top + blockHeight + step*0.6);
+      ctx.moveTo(w*0.1, y0 - step*0.4);
+      ctx.lineTo(w*0.1, y3 + step*0.4);
       ctx.stroke();
       ctx.restore();
 
-      if (!guideVisible) {
-        guideChar.style.opacity = 0;
-      } else {
-        guideChar.style.opacity = 0.4;
-      }
+      if (!showGuide || !currentChar) return;
+
+      // Leitbuchstabe auf den Linien
+      ctx.save();
+      const isDigit = mode === "digits";
+      const up = currentChar.toUpperCase();
+      const drawChar = isDigit ? currentChar : (mode === "lower" ? currentChar.toLowerCase() : up);
+
+      // Font grob an Distanz Oberlinie–Grundlinie anpassen
+      const capHeight = y2 - y0;
+      const fontSize = capHeight * 0.9; // etwas Luft oben/unten
+      ctx.font = fontSize.toFixed(0) + 'px "Trebuchet MS", system-ui, sans-serif';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = "rgba(248,250,252,0.9)";
+      ctx.globalAlpha = 0.38;
+
+      // Grundlinie leicht über y2, damit Unterlängen bis y3 laufen können
+      const baseline = y2 - step * 0.08;
+      const x = w * 0.52;
+
+      ctx.fillText(drawChar, x, baseline);
+      ctx.restore();
     }
 
+    // --- Zeichnen mit „Kreide“ ---
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       if (e.touches && e.touches[0]) {
@@ -531,6 +548,7 @@
     canvas.addEventListener("touchend", endDraw, { passive: false });
     canvas.addEventListener("touchcancel", endDraw, { passive: false });
 
+    // --- UI-Events ---
     colorDots.forEach(dot => {
       dot.addEventListener("click", () => {
         colorDots.forEach(d => d.classList.remove("active"));
@@ -539,12 +557,8 @@
       });
     });
 
-    btnPrev.addEventListener("click", () => {
-      setCharByIndex(index - 1);
-    });
-    btnNext.addEventListener("click", () => {
-      setCharByIndex(index + 1);
-    });
+    btnPrev.addEventListener("click", () => setCharByIndex(index - 1));
+    btnNext.addEventListener("click", () => setCharByIndex(index + 1));
     btnRandom.addEventListener("click", () => {
       const rnd = Math.floor(Math.random() * list.length);
       setCharByIndex(rnd);
@@ -552,14 +566,9 @@
     btnClear.addEventListener("click", clearCanvas);
 
     btnToggleGuide.addEventListener("click", () => {
-      guideVisible = !guideVisible;
-      if (guideVisible) {
-        guideChar.style.opacity = 0.4;
-        btnToggleGuide.textContent = "👁 Vorlage aus";
-      } else {
-        guideChar.style.opacity = 0;
-        btnToggleGuide.textContent = "👁 Vorlage an";
-      }
+      showGuide = !showGuide;
+      btnToggleGuide.textContent = showGuide ? "👁 Vorlage aus" : "👁 Vorlage an";
+      clearCanvas();
     });
 
     charSelect.addEventListener("change", () => {
@@ -577,9 +586,13 @@
     window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
 
     // Start
-    setMode("upper");
-    setCharByIndex(0);
-    setTimeout(resizeCanvas, 40);
+    function init() {
+      setMode("upper");
+      fillCharSelect();
+      setCharByIndex(0);
+      resizeCanvas();
+    }
+    init();
   </script>
 </body>
 </html>
