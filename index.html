@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>KidsNeed · Nachspuren 🖍️</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>Tafel-ABC Nachspuren · Druckschrift</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,115 +11,163 @@
     }
     body {
       margin: 0;
-      padding: 16px;
+      padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(to bottom, #e8f4f8 0%, #d4e9f2 100%);
+      background: radial-gradient(circle at top, #dbeafe 0, #93c5fd 40%, #1e293b 100%);
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
     }
     .shell {
-      max-width: 640px;
       width: 100%;
+      max-width: 520px;
+      padding: 12px;
+      display: flex;
+      align-items: stretch;
     }
-    .card {
-      background: #ffffff;
+    .board {
+      background: #14432b; /* Tafel-Grün */
       border-radius: 24px;
-      padding: 20px 18px 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      color: #f9fafb;
+      padding: 10px 12px 12px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
       position: relative;
       overflow: hidden;
     }
-    .card::before {
+    .board::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba(107,163,212,0.18), rgba(123,200,164,0.18));
-      opacity: 0.3;
+      background-image:
+        linear-gradient(transparent 0, transparent 6%, rgba(15,23,42,0.2) 6.2%, transparent 6.4%),
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 55%);
+      opacity: 0.7;
       pointer-events: none;
     }
-    .card-inner {
+    .board-inner {
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 16px;
+
+    .board-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 2px 2px 4px;
     }
-    .title {
-      margin: 0 0 4px;
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .board-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .board-subtitle {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    .abc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .current-letter-label {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #1f2933;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
     }
-    .subtitle {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #64748b;
+    .mode-toggle {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid rgba(226,232,240,0.4);
+      overflow: hidden;
+      font-size: 0.7rem;
+    }
+    .mode-btn {
+      border: none;
+      padding: 4px 8px;
+      background: transparent;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-weight: 500;
+      opacity: 0.7;
+    }
+    .mode-btn.active {
+      background: rgba(15,23,42,0.5);
+      opacity: 1;
     }
 
     .controls-row {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
       align-items: center;
-      margin-bottom: 10px;
-      justify-content: center;
+      margin-top: 4px;
+      flex-wrap: wrap;
     }
-
-    .mode-select,
-    .char-select,
-    .level-select {
-      padding: 6px 10px;
-      font-size: 0.95rem;
-      border-radius: 999px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      color: #1e293b;
-    }
-
     .pill-label {
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      color: #64748b;
+      letter-spacing: 0.08em;
+      opacity: 0.8;
+    }
+    .select {
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      border: 1px solid rgba(226,232,240,0.55);
+      background: rgba(15,23,42,0.25);
+      color: #e5e7eb;
     }
 
     .color-row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
+      margin-top: 4px;
       flex-wrap: wrap;
     }
     .color-dot {
-      width: 26px;
-      height: 26px;
+      width: 22px;
+      height: 22px;
       border-radius: 999px;
       border: 2px solid transparent;
       cursor: pointer;
-      box-shadow: 0 1px 4px rgba(15,23,42,0.2);
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.4);
     }
     .color-dot.active {
-      border-color: #0f172a;
-      box-shadow: 0 0 0 3px rgba(15,23,42,0.2);
+      border-color: #f9fafb;
+      box-shadow: 0 0 0 2px rgba(249,250,251,0.7);
     }
 
     .canvas-wrap {
       position: relative;
-      margin-top: 8px;
       border-radius: 18px;
-      background: #f8fafc;
-      border: 2px solid #e2e8f0;
+      border: 2px solid rgba(226,232,240,0.35);
+      background: rgba(15,23,42,0.15);
       overflow: hidden;
+      margin-top: 6px;
     }
     #traceCanvas {
       display: block;
       width: 100%;
       touch-action: none;
+      background: transparent;
     }
     .guide-char {
       position: absolute;
@@ -128,17 +176,18 @@
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      color: rgba(148,163,184,0.45);
+      color: rgba(248,250,252,0.35);
       font-weight: 700;
-      font-size: 7rem;
+      font-size: 6.8rem;
       user-select: none;
       transition: opacity 0.25s ease;
+      text-shadow: 0 0 6px rgba(15,23,42,0.7);
     }
 
     .buttons-row {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 6px;
+      margin-top: 6px;
       flex-wrap: wrap;
     }
     .btn {
@@ -146,92 +195,82 @@
       min-width: 0;
       border-radius: 999px;
       border: none;
-      padding: 10px 14px;
-      font-size: 0.95rem;
+      padding: 7px 10px;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      box-shadow: 0 2px 8px rgba(15,23,42,0.15);
+      gap: 4px;
+      background: rgba(15,23,42,0.35);
+      color: #e5e7eb;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
     }
-    .btn-primary {
-      background: #6ba3d4;
-      color: #f9fafb;
-    }
-    .btn-primary:active {
+    .btn:active {
       transform: translateY(1px);
-      box-shadow: 0 1px 4px rgba(15,23,42,0.2);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
-    .btn-ghost {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-    .btn-ghost:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 4px rgba(15,23,42,0.18);
+    .btn-accent {
+      background: #f97316;
+      color: #111827;
     }
 
-    .hint {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      color: #64748b;
-      text-align: center;
+    .hint-row {
+      margin-top: 4px;
+      font-size: 0.7rem;
+      opacity: 0.9;
     }
     .hint-strong {
       font-weight: 600;
-      color: #475569;
     }
 
     @media (min-width: 540px) {
-      .title { font-size: 1.8rem; }
-      .guide-char { font-size: 8rem; }
+      .board-title { font-size: 1.3rem; }
+      .guide-char { font-size: 7.6rem; }
+    }
+
+    @media (max-width: 420px) {
+      .shell { padding: 8px; }
+      .board { border-radius: 18px; padding: 8px 9px 10px; }
+      .board-title { font-size: 1.15rem; }
+      .current-letter-label { font-size: 1.4rem; }
+      .guide-char { font-size: 6.2rem; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <div class="card">
-      <div class="card-inner">
-        <header class="header">
-          <h1 class="title">Nachspuren 🖍️</h1>
-          <p class="subtitle">Groß- & Kleinbuchstaben und Zahlen nachspuren · 3–8 Jahre</p>
+    <div class="board">
+      <div class="board-inner">
+        <header class="board-header">
+          <div class="title-row">
+            <div class="board-title">Mein Tafel-ABC</div>
+            <div class="board-subtitle">Druckschrift · Nachspuren</div>
+          </div>
+          <div class="abc-row">
+            <div id="currentPair" class="current-letter-label">A a</div>
+            <div class="mode-toggle">
+              <button class="mode-btn active" data-mode="upper">ABC</button>
+              <button class="mode-btn" data-mode="lower">abc</button>
+              <button class="mode-btn" data-mode="digits">123</button>
+            </div>
+          </div>
         </header>
 
         <div class="controls-row">
-          <span class="pill-label">Modus</span>
-          <select id="modeSelect" class="mode-select">
-            <option value="upper">Großbuchstaben A–Z</option>
-            <option value="lower">Kleinbuchstaben a–z</option>
-            <option value="digits">Zahlen 0–9</option>
-          </select>
-
-          <span class="pill-label">Zeichen</span>
-          <select id="charSelect" class="char-select"></select>
+          <span class="pill-label">Zeichen auswählen</span>
+          <select id="charSelect" class="select"></select>
         </div>
-
-        <div class="controls-row">
-          <span class="pill-label">Level</span>
-          <select id="levelSelect" class="level-select">
-            <option value="1">Level 1 · 3–5 Jahre</option>
-            <option value="2">Level 2 · 5–7 Jahre</option>
-            <option value="3">Level 3 · 7–8 Jahre</option>
-          </select>
-        </div>
-
-        <p id="lineaturLabel" class="hint"></p>
 
         <div class="color-row">
-          <span class="pill-label">Stiftfarbe</span>
-          <button class="color-dot" data-color="#ef4444" style="background:#ef4444;"></button>
+          <span class="pill-label">Kreide</span>
+          <button class="color-dot" data-color="#facc15" style="background:#facc15;"></button>
+          <button class="color-dot active" data-color="#e5e7eb" style="background:#e5e7eb;"></button>
+          <button class="color-dot" data-color="#38bdf8" style="background:#38bdf8;"></button>
           <button class="color-dot" data-color="#f97316" style="background:#f97316;"></button>
-          <button class="color-dot" data-color="#eab308" style="background:#eab308;"></button>
           <button class="color-dot" data-color="#22c55e" style="background:#22c55e;"></button>
-          <button class="color-dot active" data-color="#0ea5e9" style="background:#0ea5e9;"></button>
-          <button class="color-dot" data-color="#6366f1" style="background:#6366f1;"></button>
-          <button class="color-dot" data-color="#ec4899" style="background:#ec4899;"></button>
-          <button class="color-dot" data-color="#111827" style="background:#111827;"></button>
+          <button class="color-dot" data-color="#fb7185" style="background:#fb7185;"></button>
         </div>
 
         <div class="canvas-wrap">
@@ -240,28 +279,29 @@
         </div>
 
         <div class="buttons-row">
-          <button id="btnClear" class="btn btn-ghost">🧽 Löschen</button>
-          <button id="btnRandom" class="btn btn-primary">🎲 Zufälliges Zeichen</button>
-          <button id="btnToggleGuide" class="btn btn-ghost">👁 Vorlage aus</button>
+          <button id="btnPrev" class="btn">⬅️ Zurück</button>
+          <button id="btnRandom" class="btn btn-accent">🎲 Zufall</button>
+          <button id="btnNext" class="btn">Weiter ➡️</button>
+        </div>
+        <div class="buttons-row">
+          <button id="btnClear" class="btn">🧽 Tafel wischen</button>
+          <button id="btnToggleGuide" class="btn">👁 Vorlage aus</button>
         </div>
 
-        <p id="exampleHint" class="hint hint-strong"></p>
-        <p id="didacticHint" class="hint"></p>
-        <p class="hint">
-          Tipp: Mit einem Finger oder Stift direkt auf dem Zeichen nachfahren. Auf größeren Bildschirmen
-          kann die Maus verwendet werden.
-        </p>
+        <div class="hint-row">
+          <div id="exampleHint" class="hint-strong"></div>
+          <div id="tipHint"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Zeichen-Listen ---
-    const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    const LOWER = "abcdefghijklmnopqrstuvwxyz".split("");
+    // ALPHABET nach deutschem System (inkl. Umlaute, ß)
+    const UPPER = "AÄBCDEFGHIJKLMNOÖPQRSTUVWÜXYZ".split("");
+    const LOWER = "aäbcdefghijklmnoöpqrstuvwüxyzß".split("");
     const DIGITS = "0123456789".split("");
 
-    // Einfache Merksätze für Buchstaben (A–Z)
     const LETTER_EXAMPLES = {
       A: "A wie Apfel",
       B: "B wie Ball",
@@ -291,250 +331,151 @@
       Z: "Z wie Zebra"
     };
 
-    // Merksätze für Zahlen (0–9)
     const DIGIT_EXAMPLES = {
-      0: "0 – Gar nichts, ein leerer Kreis.",
-      1: "1 – Ein Strich, eine Nase, ein Finger.",
+      0: "0 – Ein runder Kreis.",
+      1: "1 – Ein Strich, ein Finger.",
       2: "2 – Zwei Augen, zwei Schuhe.",
-      3: "3 – Drei Schritte nach vorn.",
+      3: "3 – Drei Schritte.",
       4: "4 – Vier Räder am Auto.",
       5: "5 – Fünf Finger an der Hand.",
-      6: "6 – Sechs bunte Bausteine.",
+      6: "6 – Sechs Bausteine.",
       7: "7 – Sieben Wochentage.",
-      8: "8 – Wie eine Schneemannfigur.",
-      9: "9 – Neun Punkte, fast schon ganz viel."
+      8: "8 – Wie ein Schneemann.",
+      9: "9 – Viele Punkte."
     };
 
-    const modeSelect = document.getElementById("modeSelect");
+    const modeButtons = Array.from(document.querySelectorAll(".mode-btn"));
     const charSelect = document.getElementById("charSelect");
-    const levelSelect = document.getElementById("levelSelect");
+    const currentPair = document.getElementById("currentPair");
     const guideChar = document.getElementById("guideChar");
     const canvas = document.getElementById("traceCanvas");
     const ctx = canvas.getContext("2d");
-    const btnClear = document.getElementById("btnClear");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
     const btnRandom = document.getElementById("btnRandom");
+    const btnClear = document.getElementById("btnClear");
     const btnToggleGuide = document.getElementById("btnToggleGuide");
     const colorDots = Array.from(document.querySelectorAll(".color-dot"));
     const exampleHint = document.getElementById("exampleHint");
-    const didacticHint = document.getElementById("didacticHint");
-    const lineaturLabel = document.getElementById("lineaturLabel");
+    const tipHint = document.getElementById("tipHint");
 
-    let currentList = UPPER;
-    let penColor = "#0ea5e9";
+    let mode = "upper";
+    let list = UPPER;
+    let index = 0;
+    let penColor = "#e5e7eb";
     let drawing = false;
     let lastX = 0;
     let lastY = 0;
     let guideVisible = true;
 
-    // --- Helfer: Canvas-Größe an Container anpassen ---
+    function setMode(newMode) {
+      mode = newMode;
+      if (mode === "upper") list = UPPER;
+      else if (mode === "lower") list = LOWER;
+      else list = DIGITS;
+
+      modeButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === mode);
+      });
+
+      fillCharSelect();
+      setCharByIndex(index || 0);
+    }
+
+    function fillCharSelect() {
+      charSelect.innerHTML = "";
+      list.forEach((ch, i) => {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = ch;
+        charSelect.appendChild(opt);
+      });
+    }
+
+    function setCharByIndex(i) {
+      if (!list.length) return;
+      if (i < 0) i = list.length - 1;
+      if (i >= list.length) i = 0;
+      index = i;
+      const ch = list[index];
+      charSelect.value = String(index);
+      const upper = ch.toUpperCase();
+      const lower = ch.toLowerCase();
+
+      if (mode === "upper") {
+        currentPair.textContent = upper + " " + lower;
+        guideChar.textContent = upper;
+      } else if (mode === "lower") {
+        currentPair.textContent = upper + " " + lower;
+        guideChar.textContent = lower;
+      } else {
+        currentPair.textContent = ch;
+        guideChar.textContent = ch;
+      }
+
+      updateHints(ch);
+      clearCanvas();
+    }
+
+    function updateHints(ch) {
+      if (mode === "digits") {
+        exampleHint.textContent = DIGIT_EXAMPLES[ch] || ("Zahl " + ch + " schreiben üben.");
+        tipHint.textContent = "Sag die Zahl laut und spure sie langsam nach. Danach suche so viele Dinge im Raum.";
+      } else {
+        const upper = ch.toUpperCase();
+        const base = LETTER_EXAMPLES[upper] || (upper + " schreiben üben.");
+        exampleHint.textContent = base;
+        tipHint.textContent = "Sprich den Buchstaben laut, spure ihn langsam nach und achte auf ruhige Handbewegungen.";
+      }
+    }
+
     function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
+      const targetHeightCss = rect.width * (16 / 9); // 9:16 Hochformat
       canvas.width = rect.width * ratio;
-      canvas.height = rect.width * 0.55 * ratio; // Seitenverhältnis
-      canvas.style.height = (rect.width * 0.55) + "px";
+      canvas.height = targetHeightCss * ratio;
+      canvas.style.height = targetHeightCss + "px";
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       clearCanvas();
     }
 
     function clearCanvas() {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, w, h);
-      drawLineatur();
-    }
-
-    // einfache Anlehnung an Grundschul-Heftlineaturen (DIN 16552-1)
-    function drawLineatur() {
-      const level = levelSelect.value; // "1", "2" oder "3"
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      if (!w || !h) return;
-
+      const w = canvas.clientWidth || canvas.width;
+      const h = canvas.clientHeight || canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      // Tafel-Linien (Schreiblinien wie im Heft)
       ctx.save();
       ctx.lineWidth = 1;
-      const strong = "#cbd5e1";   // Hauptlinien (Schreiblinie / Oberlinie)
-      const soft = "#e5e7eb";     // Hilfslinien
+      ctx.strokeStyle = "rgba(226,232,240,0.45)";
+      const blockHeight = h * 0.28;
+      const top = (h - blockHeight) / 2;
+      const step = blockHeight / 3;
+      const ys = [top, top + step, top + 2*step, top + 3*step];
 
-      // zentrales Liniensystem, wie bei einem Heft
-      if (level === "1") {
-        // Angelehnt an Lineatur 1: vier Linien, große Abstände
-        const blockHeight = h * 0.32;
-        const top = (h - blockHeight) / 2;
-        const step = blockHeight / 3;
-        const ys = [top, top + step, top + 2 * step, top + 3 * step];
-
-        ys.forEach((y, index) => {
-          ctx.beginPath();
-          ctx.setLineDash(index === 0 || index === 3 ? [] : [6, 4]);
-          ctx.strokeStyle = index === 0 || index === 3 ? strong : soft;
-          ctx.moveTo(w * 0.08, y);
-          ctx.lineTo(w * 0.98, y);
-          ctx.stroke();
-        });
-
-        // linker Rand zur Orientierung
+      ys.forEach((y, i) => {
+        ctx.setLineDash(i === 0 || i === 3 ? [] : [8,6]);
         ctx.beginPath();
-        ctx.setLineDash([4, 6]);
-        ctx.strokeStyle = soft;
-        ctx.moveTo(w * 0.08, top - step * 0.5);
-        ctx.lineTo(w * 0.08, top + blockHeight + step * 0.5);
+        ctx.moveTo(w*0.06, y);
+        ctx.lineTo(w*0.94, y);
         ctx.stroke();
-      } else if (level === "2") {
-        // Angelehnt an Lineatur 2: vier Linien, etwas enger
-        const blockHeight = h * 0.26;
-        const top = (h - blockHeight) / 2;
-        const step = blockHeight / 3;
-        const ys = [top, top + step, top + 2 * step, top + 3 * step];
+      });
 
-        ys.forEach((y, index) => {
-          ctx.beginPath();
-          ctx.setLineDash(index === 0 || index === 3 ? [] : [5, 4]);
-          ctx.strokeStyle = index === 0 || index === 3 ? strong : soft;
-          ctx.moveTo(w * 0.08, y);
-          ctx.lineTo(w * 0.98, y);
-          ctx.stroke();
-        });
-
-        ctx.beginPath();
-        ctx.setLineDash([4, 6]);
-        ctx.strokeStyle = soft;
-        ctx.moveTo(w * 0.08, top - step * 0.5);
-        ctx.lineTo(w * 0.08, top + blockHeight + step * 0.5);
-        ctx.stroke();
-      } else {
-        // Angelehnt an Lineatur 3 / 4: zwei Linien (Schreiblinie + Oberlinie)
-        const blockHeight = h * 0.22;
-        const top = (h - blockHeight) / 2;
-        const bottom = top + blockHeight;
-
-        // Schreiblinie (unten) kräftiger
-        ctx.beginPath();
-        ctx.setLineDash([]);
-        ctx.strokeStyle = strong;
-        ctx.moveTo(w * 0.08, bottom);
-        ctx.lineTo(w * 0.98, bottom);
-        ctx.stroke();
-
-        // Oberlinie (x-Höhe)
-        ctx.beginPath();
-        ctx.setLineDash([6, 4]);
-        ctx.strokeStyle = soft;
-        ctx.moveTo(w * 0.08, top);
-        ctx.lineTo(w * 0.98, top);
-        ctx.stroke();
-
-        // optionaler Rand
-        ctx.beginPath();
-        ctx.setLineDash([4, 6]);
-        ctx.strokeStyle = soft;
-        ctx.moveTo(w * 0.08, top - blockHeight * 0.4);
-        ctx.lineTo(w * 0.08, bottom + blockHeight * 0.4);
-        ctx.stroke();
-      }
-
+      // Randlinie links
+      ctx.setLineDash([4,6]);
+      ctx.beginPath();
+      ctx.moveTo(w*0.09, top - step*0.6);
+      ctx.lineTo(w*0.09, top + blockHeight + step*0.6);
+      ctx.stroke();
       ctx.restore();
-    }
 
-    function applyGuideVisibility() {
-      guideChar.style.opacity = guideVisible ? 0.45 : 0;
-    }
-
-    // --- Zeichenliste je nach Modus ---
-    function updateCharList() {
-      const mode = modeSelect.value;
-      if (mode === "upper") currentList = UPPER;
-      else if (mode === "lower") currentList = LOWER;
-      else currentList = DIGITS;
-
-      charSelect.innerHTML = "";
-      currentList.forEach(ch => {
-        const opt = document.createElement("option");
-        opt.value = ch;
-        opt.textContent = ch;
-        charSelect.appendChild(opt);
-      });
-      charSelect.selectedIndex = 0;
-      updateGuideChar();
-      updateHints();
-    }
-
-    function updateGuideChar() {
-      const ch = charSelect.value || currentList[0];
-      guideChar.textContent = ch;
-      clearCanvas();
-      updateHints();
-    }
-
-    function updateHints() {
-      const mode = modeSelect.value;
-      const ch = charSelect.value || currentList[0];
-      const level = levelSelect.value;
-
-      // Beispiel-Merksatz
-      if (mode === "digits") {
-        exampleHint.textContent = DIGIT_EXAMPLES[ch] || "";
+      if (!guideVisible) {
+        guideChar.style.opacity = 0;
       } else {
-        const upper = ch.toUpperCase();
-        const base = LETTER_EXAMPLES[upper] || "";
-        const display = base.replace(/^([A-Z])/, level === "1" ? ch : upper);
-        exampleHint.textContent = display;
-      }
-
-      // Didaktik-Hinweis je nach Level und Modus
-      let text = "";
-      if (mode === "digits") {
-        if (level === "1") {
-          text = "Level 1: Zähle die Zahl mit – sprich sie laut und spure langsam nach.";
-        } else if (level === "2") {
-          text = "Level 2: Spure die Zahl zwei- bis dreimal nach und zähle passende Dinge im Raum.";
-        } else {
-          text = "Level 3: Blende bei Bedarf die Vorlage aus und schreibe die Zahl frei aus dem Kopf.";
-        }
-      } else {
-        if (level === "1") {
-          text = "Level 1: Sprich den Buchstaben laut, fahre die Form langsam nach und achte auf ruhige Handbewegungen.";
-        } else if (level === "2") {
-          text = "Level 2: Versuche, den Buchstaben zwei- bis dreimal hintereinander sauber nachzuspuren.";
-        } else {
-          text = "Level 3: Blende die Vorlage aus und versuche, den Buchstaben frei zu schreiben. Danach kannst du vergleichen.";
-        }
-      }
-      didacticHint.textContent = text;
-
-      // Lineatur-Label passend zum Level
-      let label = "";
-      if (level === "1") {
-        label = "Angelehnt an Grundschul-Lineatur 1 (große Schreibhilfe, ca. Klasse 1).";
-      } else if (level === "2") {
-        label = "Angelehnt an Grundschul-Lineatur 2 (vier Linien, ca. Klasse 1–2).";
-      } else {
-        label = "Angelehnt an Grundschul-Lineatur 3/4 (zwei Linien, ca. Klasse 3–4).";
-      }
-      lineaturLabel.textContent = label;
-
-      // Für Level 1 die Vorlage etwas kräftiger, für Level 3 dezenter
-      if (!guideVisible) return; // manuelle Deaktivierung bleibt bestehen
-      if (level === "1") {
-        guideChar.style.opacity = 0.5;
-      } else if (level === "2") {
-        guideChar.style.opacity = 0.42;
-      } else {
-        guideChar.style.opacity = 0.3;
+        guideChar.style.opacity = 0.4;
       }
     }
 
-    // --- Farbauswahl ---
-    colorDots.forEach(dot => {
-      dot.addEventListener("click", () => {
-        colorDots.forEach(d => d.classList.remove("active"));
-        dot.classList.add("active");
-        penColor = dot.dataset.color;
-      });
-    });
-
-    // --- Zeichnen (Touch & Maus) ---
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       if (e.touches && e.touches[0]) {
@@ -542,12 +483,11 @@
           x: e.touches[0].clientX - rect.left,
           y: e.touches[0].clientY - rect.top
         };
-      } else {
-        return {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top
-        };
       }
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
     }
 
     function startDraw(e) {
@@ -562,13 +502,9 @@
       if (!drawing) return;
       e.preventDefault();
       const pos = getPos(e);
-      const level = levelSelect.value;
-      let base = 0.03;
-      if (level === "1") base = 0.045; // dicker für die Kleinen
-      else if (level === "2") base = 0.035;
-      else base = 0.028; // feiner für ältere Kinder
-
-      ctx.lineWidth = Math.max(canvas.clientWidth * base, 6);
+      const width = canvas.clientWidth || 300;
+      const base = 0.05; // Kreide-Dicke
+      ctx.lineWidth = Math.max(width * base, 5);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = penColor;
@@ -595,40 +531,55 @@
     canvas.addEventListener("touchend", endDraw, { passive: false });
     canvas.addEventListener("touchcancel", endDraw, { passive: false });
 
-    // --- Buttons ---
-    btnClear.addEventListener("click", () => {
-      clearCanvas();
+    colorDots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        colorDots.forEach(d => d.classList.remove("active"));
+        dot.classList.add("active");
+        penColor = dot.dataset.color;
+      });
     });
 
-    btnRandom.addEventListener("click", () => {
-      const idx = Math.floor(Math.random() * currentList.length);
-      charSelect.selectedIndex = idx;
-      updateGuideChar();
+    btnPrev.addEventListener("click", () => {
+      setCharByIndex(index - 1);
     });
+    btnNext.addEventListener("click", () => {
+      setCharByIndex(index + 1);
+    });
+    btnRandom.addEventListener("click", () => {
+      const rnd = Math.floor(Math.random() * list.length);
+      setCharByIndex(rnd);
+    });
+    btnClear.addEventListener("click", clearCanvas);
 
     btnToggleGuide.addEventListener("click", () => {
       guideVisible = !guideVisible;
-      applyGuideVisibility();
-      btnToggleGuide.textContent = guideVisible ? "👁 Vorlage aus" : "👁 Vorlage an";
+      if (guideVisible) {
+        guideChar.style.opacity = 0.4;
+        btnToggleGuide.textContent = "👁 Vorlage aus";
+      } else {
+        guideChar.style.opacity = 0;
+        btnToggleGuide.textContent = "👁 Vorlage an";
+      }
     });
 
-    modeSelect.addEventListener("change", updateCharList);
     charSelect.addEventListener("change", () => {
-      updateGuideChar();
-    });
-    levelSelect.addEventListener("change", () => {
-      updateHints();
+      const i = parseInt(charSelect.value, 10) || 0;
+      setCharByIndex(i);
     });
 
-    // --- Initialisierung ---
+    modeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        setMode(btn.dataset.mode);
+      });
+    });
+
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
 
-    updateCharList();
-    setTimeout(() => {
-      resizeCanvas();
-      updateHints();
-    }, 50);
+    // Start
+    setMode("upper");
+    setCharByIndex(0);
+    setTimeout(resizeCanvas, 40);
   </script>
 </body>
 </html>
