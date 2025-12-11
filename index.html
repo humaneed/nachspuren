@@ -1,399 +1,450 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-  <title>Tafel-ABC Nachspuren · Druckschrift</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#7BA591">
+  <title>Mein ABC • Schreiben lernen</title>
   <style>
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, #265847 0, #123024 40%, #071810 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0f172a;
-    }
-    .shell {
-      width: 100%;
-      max-width: 520px;
-      max-height: 100vh;
-      aspect-ratio: 9 / 16; /* fester 9:16 Frame */
-      padding: 12px;
-      display: flex;
-      align-items: stretch;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* Äußerer Icon-Rahmen in dunklem Grün */
-    .board {
-      background: radial-gradient(circle at 20% 0%, #1b4a37 0, #0f3626 45%, #0b2419 100%);
-      border-radius: 28px;
-      box-shadow:
-        0 18px 45px rgba(0,0,0,0.5),
-        inset 0 0 0 1px rgba(15,23,42,0.2);
-      color: inherit;
-      padding: 10px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+    :root {
+      --color-primary: #7BA591;
+      --color-primary-dark: #5D8A75;
+      --color-primary-light: #A8C9B8;
+      --color-accent: #E8B86D;
+      --color-accent-dark: #D4A055;
+      --color-success: #88B894;
+      --color-error: #D4816F;
+      --color-text: #3D4F42;
+      --color-text-light: #6B7C70;
+      --color-bg: #F9F7F4;
+      --color-surface: #FFFFFF;
+      --color-border: #E3DED7;
+      --shadow-sm: 0 1px 3px rgba(61, 79, 66, 0.05);
+      --shadow-md: 0 2px 6px rgba(61, 79, 66, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.15s ease;
+      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    html {
+      height: 100%;
       overflow: hidden;
-    }
-    .board::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.06), transparent 55%);
-      opacity: 0.7;
-      pointer-events: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Helle „Karte“ im Icon-Stil */
-    .board-inner {
-      position: relative;
-      z-index: 1;
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      padding: 0;
+      color: var(--color-text);
+      position: fixed;
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app-wrapper {
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding: 10px 12px 12px;
-      border-radius: 22px;
-      background: linear-gradient(145deg, #f7f1e3 0%, #eee1cd 40%, #e8dac3 100%);
-      box-shadow:
-        0 10px 22px rgba(0,0,0,0.35),
-        0 0 0 1px rgba(148,163,184,0.18);
-      height: 100%; /* nutzt gesamte 9:16-Höhe */
+      overflow: hidden;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    .board-header {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding: 2px 2px 4px;
-    }
-    .title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .board-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      color: #14532d;
-    }
-    .board-subtitle {
-      font-size: 0.7rem;
-      color: #6b7280;
-      text-align: right;
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 12px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      -webkit-overflow-scrolling: touch;
     }
 
-    .abc-row {
+    @media (min-width: 600px) {
+      .container {
+        padding: 16px;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      }
+    }
+
+    .header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
-      margin-top: 2px;
+      background: var(--color-surface);
+      padding: 12px;
+      padding-top: calc(12px + env(safe-area-inset-top));
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--color-border);
     }
-    .current-letter-label {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
+
+    @media (min-width: 600px) {
+      .header {
+        padding: 16px;
+        padding-top: calc(16px + env(safe-area-inset-top));
+        gap: 12px;
+      }
+    }
+
+    .logo {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--color-primary-dark);
       white-space: nowrap;
-      color: #0f172a;
+      letter-spacing: -0.02em;
+      font-family: var(--font-display);
     }
 
-    /* Toggle wie kleine Chips auf der Karte */
+    @media (min-width: 600px) {
+      .logo {
+        font-size: 1.35rem;
+      }
+    }
+
     .mode-toggle {
       display: inline-flex;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.75);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
       overflow: hidden;
-      font-size: 0.7rem;
-      background: rgba(15,23,42,0.02);
-      box-shadow: 0 2px 4px rgba(15,23,42,0.18);
+      font-size: 0.75rem;
+      background: var(--color-surface);
     }
+
     .mode-btn {
       border: none;
-      padding: 4px 10px;
+      padding: 5px 10px;
       background: transparent;
-      color: #475569;
+      color: var(--color-text-light);
       cursor: pointer;
       font-weight: 600;
-      opacity: 0.8;
+      transition: var(--transition);
+      min-height: 32px;
     }
+
     .mode-btn.active {
-      background: #14532d;
-      color: #fefce8;
-      opacity: 1;
+      background: var(--color-primary);
+      color: var(--color-surface);
+    }
+
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .card {
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .current-letter {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 0.15em;
+      font-family: var(--font-display);
+      line-height: 1.2;
+    }
+
+    @media (min-width: 600px) {
+      .current-letter {
+        font-size: 2.5rem;
+        letter-spacing: 0.2em;
+      }
     }
 
     .controls-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      margin-top: 4px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
-    .pill-label {
-      font-size: 0.7rem;
+
+    .label {
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
+      letter-spacing: 0.05em;
+      color: var(--color-text-light);
+      font-weight: 600;
     }
+
     .select {
-      padding: 4px 8px;
-      font-size: 0.78rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.9);
-      background: #fdf7ea;
-      color: #0f172a;
-      box-shadow: 0 2px 4px rgba(148,163,184,0.45);
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-weight: 500;
+      min-height: 32px;
+    }
+
+    @media (min-width: 600px) {
+      .select {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
     }
 
     .color-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      margin-top: 4px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
+
     .color-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
-      box-shadow:
-        0 0 0 1px rgba(148,163,184,0.7),
-        0 2px 4px rgba(15,23,42,0.25);
-    }
-    .color-dot.active {
-      border-color: #fefce8;
-      box-shadow:
-        0 0 0 2px rgba(250,250,249,0.9),
-        0 3px 7px rgba(15,23,42,0.35);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Tafelbereich: füllt den restlichen Platz */
+    .color-dot.active {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+    }
+
     .canvas-wrap {
       position: relative;
-      border-radius: 18px;
-      border: 1px solid rgba(148,163,184,0.9);
-      background: radial-gradient(circle at top, #14532d 0, #0b281b 55%, #081710 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-primary-dark);
       overflow: hidden;
-      margin-top: 6px;
-      box-shadow:
-        inset 0 0 0 1px rgba(15,23,42,0.35),
-        0 6px 14px rgba(15,23,42,0.45);
-      flex: 1 1 auto;   /* nimmt das, was übrig bleibt */
-      min-height: 0;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      aspect-ratio: 5 / 2;
     }
+
     #traceCanvas {
       display: block;
       width: 100%;
-      height: 100%;     /* Canvas füllt die Tafel */
+      height: 100%;
       touch-action: none;
       background: transparent;
     }
 
     .buttons-row {
       display: flex;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
-    /* Buttons wie kleine Karten/Chips */
     .btn {
       flex: 1 1 0;
       min-width: 0;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.8);
-      padding: 7px 10px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      background: #f7f1e3;
-      color: #14532d;
-      box-shadow:
-        0 2px 4px rgba(15,23,42,0.25),
-        0 0 0 1px rgba(255,255,255,0.75);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: var(--transition);
+      min-height: 44px;
     }
-    .btn:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 1px 2px rgba(15,23,42,0.4),
-        0 0 0 1px rgba(255,255,255,0.6);
+
+    @media (min-width: 600px) {
+      .btn {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+      }
     }
+
+    .btn:hover {
+      background: var(--color-bg);
+      border-color: var(--color-primary);
+    }
+
     .btn-accent {
-      background: #facc15;
-      color: #1f2933;
-      border-color: rgba(202,138,4,0.9);
+      background: var(--color-accent);
+      color: var(--color-text);
+      border-color: var(--color-accent-dark);
     }
+
     .btn-check {
-      background: #22c55e;
-      color: #052e16;
-      border-color: rgba(22,163,74,0.95);
+      background: var(--color-success);
+      color: var(--color-text);
+      border-color: var(--color-primary);
     }
 
     .hint-row {
-      margin-top: 4px;
-      font-size: 0.7rem;
-      color: #4b5563;
-    }
-    .hint-strong {
-      font-weight: 600;
-      color: #111827;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--color-text-light);
     }
 
-    /* Feedback-Kasten wie kleine eingefärbte Karte */
-    .feedback-box {
-      margin-top: 4px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      background: #fdf7ea;
-      border: 1px solid rgba(148,163,184,0.7);
-      min-height: 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(15,23,42,0.25);
+    .hint-strong {
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 4px;
     }
+
+    .feedback-box {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      min-height: 60px;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
     .feedback-box.hidden {
       display: none;
     }
+
     .feedback-box.success {
       background: #e4fbe9;
-      border-color: rgba(34,197,94,0.8);
+      border-color: var(--color-success);
     }
+
     .feedback-box.partial {
       background: #fff4e6;
-      border-color: rgba(251,146,60,0.9);
+      border-color: var(--color-accent);
     }
+
     .feedback-box.try-again {
       background: #fee2e2;
-      border-color: rgba(239,68,68,0.9);
+      border-color: var(--color-error);
     }
+
     .feedback-title {
       font-size: 0.9rem;
-      font-weight: 800;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #111827;
+      color: var(--color-text);
+      margin-bottom: 6px;
     }
+
     .feedback-text {
       font-size: 0.8rem;
-      line-height: 1.4;
-      color: #374151;
+      line-height: 1.5;
+      color: var(--color-text-light);
     }
+
     .score-bar {
-      margin-top: 2px;
+      margin-top: 8px;
       height: 6px;
-      background: rgba(148,163,184,0.4);
-      border-radius: 999px;
+      background: var(--color-border);
+      border-radius: var(--radius-sm);
       overflow: hidden;
     }
+
     .score-fill {
       height: 100%;
-      background: linear-gradient(90deg, #22c55e, #a3e635);
-      border-radius: 999px;
-      transition: width 0.5s ease;
-    }
-
-    @media (min-width: 540px) {
-      .board-title { font-size: 1.3rem; }
-    }
-
-    @media (max-width: 420px) {
-      .shell { padding: 8px; }
-      .board { border-radius: 22px; padding: 8px; }
-      .board-inner { border-radius: 20px; padding: 9px 10px 11px; }
-      .board-title { font-size: 1.15rem; }
-      .current-letter-label { font-size: 1.4rem; }
+      background: var(--color-primary);
+      border-radius: var(--radius-sm);
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="board">
-      <div class="board-inner">
-        <header class="board-header">
-          <div class="title-row">
-            <div class="board-title">Mein Tafel ABC</div>
-            <div class="board-subtitle">Druckschrift · Nachspuren</div>
-          </div>
-          <div class="abc-row">
-            <div id="currentPair" class="current-letter-label">A a</div>
-            <div class="mode-toggle">
-              <button class="mode-btn active" data-mode="upper">ABC</button>
-              <button class="mode-btn" data-mode="lower">abc</button>
-              <button class="mode-btn" data-mode="digits">123</button>
-            </div>
-          </div>
-        </header>
+  <div class="app-wrapper">
+    <div class="header">
+      <div class="logo">✏️ Mein ABC</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="upper">ABC</button>
+        <button class="mode-btn" data-mode="lower">abc</button>
+        <button class="mode-btn" data-mode="digits">123</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <div class="current-letter" id="currentPair">A a</div>
 
         <div class="controls-row">
-          <span class="pill-label">Zeichen</span>
+          <span class="label">Zeichen</span>
           <select id="charSelect" class="select"></select>
         </div>
 
         <div class="color-row">
-          <span class="pill-label">Kreide</span>
-          <button class="color-dot" data-color="#facc15" style="background:#facc15;"></button>
-          <button class="color-dot active" data-color="#e5e7eb" style="background:#e5e7eb;"></button>
-          <button class="color-dot" data-color="#38bdf8" style="background:#38bdf8;"></button>
-          <button class="color-dot" data-color="#f97316" style="background:#f97316;"></button>
-          <button class="color-dot" data-color="#22c55e" style="background:#22c55e;"></button>
-          <button class="color-dot" data-color="#fb7185" style="background:#fb7185;"></button>
+          <span class="label">Farbe</span>
+          <button class="color-dot" data-color="#FBBF24" style="background:#FBBF24;"></button>
+          <button class="color-dot active" data-color="#F3F4F6" style="background:#F3F4F6;"></button>
+          <button class="color-dot" data-color="#60A5FA" style="background:#60A5FA;"></button>
+          <button class="color-dot" data-color="#FB923C" style="background:#FB923C;"></button>
+          <button class="color-dot" data-color="#88B894" style="background:#88B894;"></button>
+          <button class="color-dot" data-color="#F472B6" style="background:#F472B6;"></button>
         </div>
+      </div>
 
-        <div class="canvas-wrap">
-          <canvas id="traceCanvas" width="600" height="320"></canvas>
-        </div>
+      <div class="canvas-wrap">
+        <canvas id="traceCanvas" width="1000" height="400"></canvas>
+      </div>
 
-        <div class="buttons-row">
-          <button id="btnPrev" class="btn">⬅️ Zurück</button>
-          <button id="btnRandom" class="btn btn-accent">🎲 Zufall</button>
-          <button id="btnNext" class="btn">Weiter ➡️</button>
-        </div>
-        <div class="buttons-row">
-          <button id="btnClear" class="btn">🧽 Tafel wischen</button>
-          <button id="btnCheck" class="btn btn-check">✓ Prüfen</button>
-          <button id="btnToggleGuide" class="btn">👁 Vorlage aus</button>
-        </div>
+      <div class="buttons-row">
+        <button id="btnPrev" class="btn">⬅️ Zurück</button>
+        <button id="btnRandom" class="btn btn-accent">🎲 Zufall</button>
+        <button id="btnNext" class="btn">Weiter ➡️</button>
+      </div>
+      
+      <div class="buttons-row">
+        <button id="btnClear" class="btn">🧽 Löschen</button>
+        <button id="btnCheck" class="btn btn-check">✓ Prüfen</button>
+        <button id="btnToggleGuide" class="btn">👁 Vorlage aus</button>
+      </div>
 
-        <div id="feedbackBox" class="feedback-box hidden">
-          <div class="feedback-title" id="feedbackTitle"></div>
-          <div class="feedback-text" id="feedbackText"></div>
-          <div class="score-bar">
-            <div class="score-fill" id="scoreFill" style="width: 0%"></div>
-          </div>
+      <div id="feedbackBox" class="feedback-box hidden">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+        <div class="score-bar">
+          <div class="score-fill" id="scoreFill" style="width: 0%"></div>
         </div>
+      </div>
 
-        <div class="hint-row">
-          <div id="exampleHint" class="hint-strong"></div>
-          <div id="tipHint"></div>
-        </div>
+      <div class="card hint-row">
+        <div id="exampleHint" class="hint-strong"></div>
+        <div id="tipHint"></div>
       </div>
     </div>
   </div>
 
-  <!-- JS (nur resizeCanvas angepasst auf flex-Höhe) -->
   <script>
     const UPPER = "AÄBCDEFGHIJKLMNOÖPQRSTUVWÜXYZ".split("");
     const LOWER = "aäbcdefghijklmnoöpqrstuvwüxyzß".split("");
@@ -405,30 +456,18 @@
 
     const LETTER_EXAMPLES = {
       A: "A wie Apfel", Ä: "Ä wie Äpfel",
-      B: "B wie Ball",
-      C: "C wie Computer",
-      D: "D wie Dinosaurier",
-      E: "E wie Esel",
-      F: "F wie Fisch",
-      G: "G wie Gitarre",
-      H: "H wie Herz",
-      I: "I wie Igel",
-      J: "J wie Jacke",
-      K: "K wie Kerze",
-      L: "L wie Leiter",
-      M: "M wie Haus",
-      N: "N wie Nagel",
-      O: "O wie Ofen", Ö: "Ö wie Öfen",
-      P: "P wie Palme",
-      Q: "Q wie Qualle",
-      R: "R wie Rakete",
-      S: "S wie Sonne",
-      T: "T wie Tiger",
-      U: "U wie Uhr", Ü: "Ü wie Übung",
-      V: "V wie Vogel",
-      W: "W wie Wolke",
-      X: "X wie Xylophon",
-      Y: "Y wie Yacht",
+      B: "B wie Ball", C: "C wie Computer",
+      D: "D wie Dinosaurier", E: "E wie Esel",
+      F: "F wie Fisch", G: "G wie Gitarre",
+      H: "H wie Herz", I: "I wie Igel",
+      J: "J wie Jacke", K: "K wie Kerze",
+      L: "L wie Leiter", M: "M wie Haus",
+      N: "N wie Nagel", O: "O wie Ofen", Ö: "Ö wie Öfen",
+      P: "P wie Palme", Q: "Q wie Qualle",
+      R: "R wie Rakete", S: "S wie Sonne",
+      T: "T wie Tiger", U: "U wie Uhr", Ü: "Ü wie Übung",
+      V: "V wie Vogel", W: "W wie Wolke",
+      X: "X wie Xylophon", Y: "Y wie Yacht",
       Z: "Z wie Zeit"
     };
 
@@ -468,7 +507,7 @@
     let list = UPPER;
     let index = 0;
     let currentChar = "A";
-    let penColor = "#e5e7eb";
+    let penColor = "#F3F4F6";
     let drawing = false;
     let lastX = 0;
     let lastY = 0;
@@ -525,12 +564,12 @@
     function updateHints() {
       if (mode === "digits") {
         exampleHint.textContent = DIGIT_EXAMPLES[currentChar] || ("Zahl " + currentChar + " schreiben üben.");
-        tipHint.textContent = "Sprich die Zahl laut aus und betrachte ihre Form genau. Fahre sie dann langsam mit dem Finger in der Luft nach, bevor du auf der Tafel schreibst.";
+        tipHint.textContent = "Sprich die Zahl laut aus und betrachte ihre Form genau. Fahre sie dann langsam mit dem Finger nach.";
       } else {
         const upper = currentChar.toUpperCase();
         const base = LETTER_EXAMPLES[upper] || (upper + " schreiben üben.");
         exampleHint.textContent = base;
-        tipHint.textContent = "Schau dir beide Buchstaben an: Wo beginnen sie? Welche Richtung nehmen sie? Spure dann langsam nach – erst den großen, dann den kleinen Buchstaben.";
+        tipHint.textContent = "Schau dir beide Buchstaben an: Wo beginnen sie? Spure dann langsam nach – erst den großen, dann den kleinen Buchstaben.";
       }
     }
 
@@ -538,7 +577,6 @@
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
 
-      // Canvas an die tatsächliche Größe der flex-Tafel anpassen
       canvas.width = rect.width * ratio;
       canvas.height = rect.height * ratio;
 
@@ -560,33 +598,68 @@
       if (!w || !h) return;
 
       ctx.save();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "rgba(226,232,240,0.75)";
-
-      const lineSpacing = h * 0.09;
+      
+      // Schullineatur nach Poster-Vorbild
+      // Verhältnis: Oberlänge 1.5 : x-Höhe 1 : Unterlänge 1
+      const totalHeight = h * 0.62; // Gesamthöhe des Lineatur-Systems
+      const xHeight = totalHeight / 3.5; // x-Höhe als Basis
+      
       const centerY = h * 0.5;
-      const line1 = centerY - lineSpacing * 1.5;
-      const line2 = centerY - lineSpacing * 0.5;
-      const line3 = centerY + lineSpacing * 0.5;
-      const line4 = centerY + lineSpacing * 1.5;
+      
+      // Präzise Linienpositionierung
+      const lineAscender = centerY - (xHeight * 1.5) - (xHeight * 0.5); // Oberlängen-Linie
+      const lineMiddle = centerY - (xHeight * 0.5);                     // Mittellinie (x-Höhe oben)
+      const lineBase = centerY + (xHeight * 0.5);                       // Grundlinie
+      const lineDescender = lineBase + xHeight;                          // Unterlängen-Linie
 
-      const xLeft = w * 0.08;
-      const xRight = w * 0.92;
+      const xLeft = w * 0.06;
+      const xRight = w * 0.94;
 
-      [line1, line2, line3, line4].forEach((y, i) => {
-        ctx.beginPath();
-        ctx.setLineDash(i === 0 || i === 3 ? [] : [6, 4]);
-        ctx.moveTo(xLeft, y);
-        ctx.lineTo(xRight, y);
-        ctx.stroke();
-      });
-
-      ctx.setLineDash([3, 5]);
+      // Oberlängen-Linie (dezent gestrichelt)
+      ctx.strokeStyle = "rgba(168, 201, 184, 0.25)";
       ctx.lineWidth = 1;
+      ctx.setLineDash([3, 4]);
       ctx.beginPath();
-      ctx.moveTo(w * 0.12, line1 - lineSpacing * 0.3);
-      ctx.lineTo(w * 0.12, line4 + lineSpacing * 0.3);
+      ctx.moveTo(xLeft, lineAscender);
+      ctx.lineTo(xRight, lineAscender);
       ctx.stroke();
+      
+      // Mittellinie (gestrichelt)
+      ctx.strokeStyle = "rgba(168, 201, 184, 0.35)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(xLeft, lineMiddle);
+      ctx.lineTo(xRight, lineMiddle);
+      ctx.stroke();
+      
+      // Grundlinie (durchgezogen, betont)
+      ctx.strokeStyle = "rgba(168, 201, 184, 0.5)";
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(xLeft, lineBase);
+      ctx.lineTo(xRight, lineBase);
+      ctx.stroke();
+      
+      // Unterlängen-Linie (dezent gestrichelt)
+      ctx.strokeStyle = "rgba(168, 201, 184, 0.25)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(xLeft, lineDescender);
+      ctx.lineTo(xRight, lineDescender);
+      ctx.stroke();
+
+      // Vertikale Hilfslinie links (sehr dezent)
+      ctx.setLineDash([2, 5]);
+      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = "rgba(168, 201, 184, 0.2)";
+      ctx.beginPath();
+      ctx.moveTo(w * 0.12, lineAscender - xHeight * 0.15);
+      ctx.lineTo(w * 0.12, lineDescender + xHeight * 0.15);
+      ctx.stroke();
+      
       ctx.restore();
 
       if (!showGuide || !currentChar) return;
@@ -595,47 +668,54 @@
       const isDigit = mode === "digits";
 
       if (isDigit) {
-        const digitHeight = line3 - line1;
-        const fontSize = digitHeight * 0.95;
-        ctx.font = `700 ${fontSize}px Arial, "Helvetica Neue", sans-serif`;
+        // Ziffern: von Oberlängen-Linie bis Grundlinie (wie Großbuchstaben)
+        const digitHeight = lineBase - lineAscender;
+        const fontSize = digitHeight * 0.88;
+        ctx.font = `700 ${fontSize}px Arial, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "rgba(248,250,252,0.98)";
-        ctx.globalAlpha = 0.32;
-        ctx.fillText(currentChar, w * 0.5, line3);
+        ctx.fillStyle = "rgba(168, 201, 184, 0.22)";
+        ctx.fillText(currentChar, w * 0.5, lineBase);
       } else {
         const up = currentChar.toUpperCase();
         const low = currentChar.toLowerCase();
 
-        const upperHeight = line3 - line1;
-        const upperFontSize = upperHeight * 0.95;
+        // Großbuchstaben: von Oberlängen-Linie bis Grundlinie
+        const upperHeight = lineBase - lineAscender;
+        const upperFontSize = upperHeight * 0.88;
 
-        ctx.font = `700 ${upperFontSize}px Arial, "Helvetica Neue", sans-serif`;
+        ctx.font = `700 ${upperFontSize}px Arial, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "rgba(248,250,252,0.98)";
-        ctx.globalAlpha = 0.32;
+        ctx.fillStyle = "rgba(168, 201, 184, 0.22)";
 
-        const upperX = w * 0.35;
-        ctx.fillText(up, upperX, line3);
+        // Position Großbuchstabe: 32% von links
+        const upperX = w * 0.32;
+        ctx.fillText(up, upperX, lineBase);
 
+        // Kleinbuchstaben: abhängig von Ober-/Unterlängen
         let lowerFontSize, lowerBaseline;
 
         if (ASCENDERS.has(low)) {
-          lowerFontSize = upperFontSize;
-          lowerBaseline = line3;
+          // Buchstaben mit Oberlängen: von Oberlängen-Linie bis Grundlinie
+          const ascenderHeight = lineBase - lineAscender;
+          lowerFontSize = ascenderHeight * 0.88;
+          lowerBaseline = lineBase;
         } else if (DESCENDERS.has(low)) {
-          const lowerHeight = line4 - line2;
-          lowerFontSize = lowerHeight * 0.95;
-          lowerBaseline = line4;
+          // Buchstaben mit Unterlängen: von Mittellinie bis Unterlängen-Linie
+          const descenderHeight = lineDescender - lineMiddle;
+          lowerFontSize = descenderHeight * 0.88;
+          lowerBaseline = lineDescender;
         } else {
-          const xHeight = line3 - line2;
-          lowerFontSize = xHeight * 0.95;
-          lowerBaseline = line3;
+          // Normale Kleinbuchstaben: x-Höhe (Mittellinie bis Grundlinie)
+          const normalHeight = lineBase - lineMiddle;
+          lowerFontSize = normalHeight * 0.88;
+          lowerBaseline = lineBase;
         }
 
-        ctx.font = `700 ${lowerFontSize}px Arial, "Helvetica Neue", sans-serif`;
-        const lowerX = w * 0.65;
+        ctx.font = `700 ${lowerFontSize}px Arial, sans-serif`;
+        // Position Kleinbuchstabe: 68% von links (guter Abstand zum Großbuchstaben)
+        const lowerX = w * 0.68;
         ctx.fillText(low, lowerX, lowerBaseline);
       }
 
@@ -669,8 +749,8 @@
       e.preventDefault();
       const pos = getPos(e);
       const width = canvas.clientWidth || 300;
-      const base = 0.015;
-      ctx.lineWidth = Math.max(width * base, 2);
+      const base = 0.010; // Etwas dünner für präziseres Schreiben
+      ctx.lineWidth = Math.max(width * base, 2.5);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.strokeStyle = penColor;
@@ -714,51 +794,58 @@
       tempCanvas.width = w;
       tempCanvas.height = h;
 
-      const lineSpacing = h * 0.09;
+      // Gleiche präzise Proportionen wie in drawGuidelinesAndLetter
+      const totalHeight = h * 0.62;
+      const xHeight = totalHeight / 3.5;
+      
       const centerY = h * 0.5;
-      const line1 = centerY - lineSpacing * 1.5;
-      const line2 = centerY - lineSpacing * 0.5;
-      const line3 = centerY + lineSpacing * 0.5;
-      const line4 = centerY + lineSpacing * 1.5;
+      
+      const lineAscender = centerY - (xHeight * 1.5) - (xHeight * 0.5);
+      const lineMiddle = centerY - (xHeight * 0.5);
+      const lineBase = centerY + (xHeight * 0.5);
+      const lineDescender = lineBase + xHeight;
 
       const isDigit = mode === "digits";
 
       if (isDigit) {
-        const digitHeight = line3 - line1;
-        const fontSize = digitHeight * 0.95;
+        const digitHeight = lineBase - lineAscender;
+        const fontSize = digitHeight * 0.88;
         tempCtx.font = `700 ${fontSize}px Arial, sans-serif`;
         tempCtx.textAlign = "center";
         tempCtx.textBaseline = "alphabetic";
         tempCtx.fillStyle = "#ffffff";
-        tempCtx.fillText(currentChar, w * 0.5, line3);
+        tempCtx.fillText(currentChar, w * 0.5, lineBase);
       } else {
         const up = currentChar.toUpperCase();
         const low = currentChar.toLowerCase();
-        const upperHeight = line3 - line1;
-        const upperFontSize = upperHeight * 0.95;
+        
+        const upperHeight = lineBase - lineAscender;
+        const upperFontSize = upperHeight * 0.88;
 
         tempCtx.font = `700 ${upperFontSize}px Arial, sans-serif`;
         tempCtx.textAlign = "center";
         tempCtx.textBaseline = "alphabetic";
         tempCtx.fillStyle = "#ffffff";
-        tempCtx.fillText(up, w * 0.35, line3);
+        tempCtx.fillText(up, w * 0.32, lineBase);
 
         let lowerFontSize, lowerBaseline;
+        
         if (ASCENDERS.has(low)) {
-          lowerFontSize = upperFontSize;
-          lowerBaseline = line3;
+          const ascenderHeight = lineBase - lineAscender;
+          lowerFontSize = ascenderHeight * 0.88;
+          lowerBaseline = lineBase;
         } else if (DESCENDERS.has(low)) {
-          const lowerHeight = line4 - line2;
-          lowerFontSize = lowerHeight * 0.95;
-          lowerBaseline = line4;
+          const descenderHeight = lineDescender - lineMiddle;
+          lowerFontSize = descenderHeight * 0.88;
+          lowerBaseline = lineDescender;
         } else {
-          const xHeight = line3 - line2;
-          lowerFontSize = xHeight * 0.95;
-          lowerBaseline = line3;
+          const normalHeight = lineBase - lineMiddle;
+          lowerFontSize = normalHeight * 0.88;
+          lowerBaseline = lineBase;
         }
 
         tempCtx.font = `700 ${lowerFontSize}px Arial, sans-serif`;
-        tempCtx.fillText(low, w * 0.65, lowerBaseline);
+        tempCtx.fillText(low, w * 0.68, lowerBaseline);
       }
 
       return tempCanvas;
@@ -905,38 +992,38 @@
 
       if (score >= 85) {
         emoji = "🌟";
-        title = "Perfekt geschrieben!";
+        title = "Perfekt!";
         text = hasDots
-          ? "Wow! Du hast den Buchstaben wirklich sorgfältig nachgespurt. Die Punkte oben hast du auch richtig gesetzt! Du hast genau auf die Linien geachtet und die Form sehr gut getroffen."
-          : "Wow! Du hast den Buchstaben wirklich sorgfältig nachgespurt. Du hast genau auf die Linien geachtet und die Form sehr gut getroffen. Das zeigt, dass du mit Konzentration und Ruhe arbeitest!";
+          ? "Super! Du hast den Buchstaben sehr genau nachgespurt. Die Punkte oben sind auch richtig!"
+          : "Super! Du hast den Buchstaben sehr genau nachgespurt und gut auf die Linien geachtet.";
         cssClass = "success";
       } else if (score >= 70) {
         emoji = "⭐";
-        title = "Sehr gut gemacht!";
+        title = "Sehr gut!";
         text = hasDots
-          ? "Prima! Deine Schrift sieht schon richtig gut aus. Die Punkte sind da und die Form stimmt. Mit etwas mehr Übung wird es noch besser!"
-          : "Prima! Deine Schrift sieht schon richtig gut aus. Du hast die richtige Form und bleibst gut auf den Linien. Mit etwas mehr Übung wird es noch besser!";
+          ? "Prima! Deine Schrift sieht gut aus. Die Punkte sind da und die Form stimmt."
+          : "Prima! Deine Schrift sieht gut aus. Die Form stimmt und du bleibst auf den Linien.";
         cssClass = "success";
       } else if (score >= 50) {
         emoji = "✅";
         title = "Geschafft!";
         text = hasDots
-          ? "Gut gemacht! Du hast die Aufgabe gemeistert. Deine Form ist erkennbar und die Punkte sind da. Wenn du magst, kannst du es nochmal probieren und noch genauer arbeiten."
-          : "Gut gemacht! Du hast die Aufgabe gemeistert. Deine Form ist erkennbar und du bist den Linien gefolgt. Wenn du magst, kannst du es nochmal probieren und noch genauer arbeiten.";
+          ? "Gut gemacht! Die Form ist erkennbar und die Punkte sind da. Übe weiter!"
+          : "Gut gemacht! Die Form ist erkennbar. Übe weiter für noch mehr Genauigkeit!";
         cssClass = "success";
       } else if (score >= 35) {
         emoji = "💪";
         title = "Fast geschafft!";
         text = hasDots
-          ? "Du bist schon sehr nah dran! Achte besonders auf die Punkte oben – sie gehören zum Buchstaben dazu. Spure die Vorlage langsam nach, dann klappt es!"
-          : "Du bist schon sehr nah dran! Versuch beim nächsten Mal, die Vorlage noch genauer nachzuspuren. Nimm dir Zeit und folge den Linien langsam Stück für Stück. Du kannst das!";
+          ? "Fast! Achte auf die Punkte oben – sie gehören zum Buchstaben. Spure langsam nach!"
+          : "Fast! Versuch die Vorlage genauer nachzuspuren. Folge den Linien langsam.";
         cssClass = "partial";
       } else {
         emoji = "🎯";
         title = "Versuch es nochmal!";
         text = hasDots
-          ? "Lass uns gemeinsam üben! Schau dir die Vorlage genau an: Der Buchstabe hat Punkte oben – die sind ganz wichtig! Spure erst den Buchstaben und dann die Punkte nach. Jeder Versuch macht dich besser!"
-          : "Lass uns gemeinsam üben! Schau dir die Vorlage genau an: Wo beginnt der Buchstabe? Wo endet er? Spure dann langsam und vorsichtig nach. Jeder Versuch macht dich besser!";
+          ? "Schau dir die Vorlage gut an: Der Buchstabe hat Punkte oben. Spure beides nach!"
+          : "Schau dir die Vorlage gut an: Wo beginnt der Buchstabe? Spure langsam nach!";
         cssClass = "try-again";
       }
 
