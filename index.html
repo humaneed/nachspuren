@@ -1,1087 +1,999 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#7BA591">
-  <title>Mein ABC • Schreiben lernen</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#D4A574" />
+  <meta name="description" content="Alphabet nachspuren – Buchstaben einzeln als Aufgabe (Kl. 1–4)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Alphabet – Nachspuren</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
+    :root{
+      --s-1: 8px; --s-2: 16px; --s-3: 24px; --s-4: 32px;
+      --bg-canvas: #F5F0E8;
+      --bg-card: #FFFFFF;
+      --bg-muted: #EDE8DC;
+      --ink: #2D2A26;
+      --muted: #6B665C;
+      --accent: #D4A574;
+      --good: #7BA08A;
+      --bad: #C4726C;
+      --r-lg: 24px;
+      --r-xl: 28px;
+      --shadow: 0 2px 10px rgba(45,42,38,.10);
+      --shadow2: 0 1px 3px rgba(45,42,38,.06);
+      --font: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --app-max-w: 600px;
     }
 
-    :root {
-      --color-primary: #7BA591;
-      --color-primary-dark: #5D8A75;
-      --color-primary-light: #A8C9B8;
-      --color-accent: #E8B86D;
-      --color-accent-dark: #D4A055;
-      --color-success: #88B894;
-      --color-error: #D4816F;
-      --color-text: #3D4F42;
-      --color-text-light: #6B7C70;
-      --color-bg: #F9F7F4;
-      --color-surface: #FFFFFF;
-      --color-border: #E3DED7;
-      --shadow-sm: 0 1px 3px rgba(61, 79, 66, 0.05);
-      --shadow-md: 0 2px 6px rgba(61, 79, 66, 0.08);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --transition: all 0.15s ease;
-      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
-      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Roboto', sans-serif;
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      background: var(--bg-canvas);
+      color: var(--ink);
+      font-family: var(--font);
+      font-weight: 800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    *:focus-visible{ outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
+
+    #app{
+      width:100%;
+      height:100%;
+      background: var(--bg-card);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      position:relative;
+    }
+    @media (min-width: 520px){
+      body{ padding: var(--s-3); }
+      #app{
+        max-width: var(--app-max-w);
+        height: 94dvh;
+        max-height: 940px;
+        border: 3px solid var(--ink);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow2);
+      }
     }
 
-    html {
-      height: 100%;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    header{
+      height: 72px;
+      padding: 0 var(--s-3);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: var(--s-2);
+      border-bottom: 3px solid var(--ink);
+      background: var(--bg-card);
+      flex: 0 0 auto;
     }
+    .brand{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .title{ font-size: 20px; font-weight: 900; letter-spacing:-.02em; line-height:1.1; }
+    .subtitle{ font-size: 12px; font-weight: 900; letter-spacing:.10em; text-transform:uppercase; color: var(--muted); }
+    .top-actions{ display:flex; gap: var(--s-2); align-items:center; }
 
-    body {
-      font-family: var(--font-body);
-      background: var(--color-bg);
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      padding: 0;
-      color: var(--color-text);
-      position: fixed;
-      width: 100%;
+    .pill{
+      min-height: 48px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      background: var(--bg-muted);
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      user-select:none;
+      cursor:pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    .pill:hover{ box-shadow: var(--shadow); transform: translateY(-1px); }
+    .pill:active{ transform: scale(.98); box-shadow:none; }
+    .pill .icon{ font-size:18px; }
+    .pill .val{ font-weight: 900; font-size: 14px; }
+
+    main{
+      flex:1;
+      overflow:auto;
+      padding: var(--s-3);
+      background:
+        radial-gradient(1200px 340px at 50% 0%, rgba(212,165,116,.14), transparent 60%),
+        var(--bg-card);
+      overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
     }
 
-    .app-wrapper {
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      max-width: 600px;
-      margin: 0 auto;
+    .hero{
+      border: 3px solid var(--ink);
+      border-radius: var(--r-xl);
+      padding: var(--s-3);
+      background: linear-gradient(180deg, rgba(237,232,220,.55), rgba(255,255,255,1));
+      box-shadow: var(--shadow2);
+      margin-bottom: var(--s-3);
+    }
+    .hero h1{ margin:0 0 6px; font-size: 24px; font-weight: 900; letter-spacing:-.02em; }
+    .hero p{ margin:0; font-size: 14px; font-weight: 800; color: var(--muted); }
+
+    .card{
+      border: 3px solid var(--ink);
+      border-radius: var(--r-xl);
+      background: var(--bg-card);
+      box-shadow: var(--shadow2);
+      padding: var(--s-3);
     }
 
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 12px;
-      padding-bottom: calc(12px + env(safe-area-inset-bottom));
-      -webkit-overflow-scrolling: touch;
+    .row{ display:flex; flex-wrap:wrap; gap: var(--s-2); align-items:center; justify-content:space-between; }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 2px solid var(--ink);
+      background: var(--bg-muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      user-select:none;
     }
 
-    @media (min-width: 600px) {
-      .container {
-        padding: 16px;
-        padding-bottom: calc(16px + env(safe-area-inset-bottom));
-      }
+    .progress{
+      width:100%;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid var(--ink);
+      background: rgba(0,0,0,0.04);
+      overflow:hidden;
+    }
+    .progress > div{
+      height:100%;
+      width:0%;
+      background: rgba(212,165,116,.75);
+      transition: width 260ms ease;
     }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      background: var(--color-surface);
-      padding: 12px;
-      padding-top: calc(12px + env(safe-area-inset-top));
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      flex-shrink: 0;
-      border-bottom: 1px solid var(--color-border);
+    .stage{
+      margin-top: var(--s-2);
+      border-radius: 18px;
+      border: 3px solid var(--ink);
+      background: var(--bg-card);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
     }
-
-    @media (min-width: 600px) {
-      .header {
-        padding: 16px;
-        padding-top: calc(16px + env(safe-area-inset-top));
-        gap: 12px;
-      }
-    }
-
-    .logo {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--color-primary-dark);
-      white-space: nowrap;
-      letter-spacing: -0.02em;
-      font-family: var(--font-display);
-    }
-
-    @media (min-width: 600px) {
-      .logo {
-        font-size: 1.35rem;
-      }
-    }
-
-    .mode-toggle {
-      display: inline-flex;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      overflow: hidden;
-      font-size: 0.75rem;
-      background: var(--color-surface);
-    }
-
-    .mode-btn {
-      border: none;
-      padding: 5px 10px;
-      background: transparent;
-      color: var(--color-text-light);
-      cursor: pointer;
-      font-weight: 600;
-      transition: var(--transition);
-      min-height: 32px;
-    }
-
-    .mode-btn.active {
-      background: var(--color-primary);
-      color: var(--color-surface);
-    }
-
-    .card {
-      background: var(--color-surface);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--color-border);
-      margin-bottom: 12px;
-    }
-
-    @media (min-width: 600px) {
-      .card {
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-    }
-
-    .current-letter {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--color-text);
-      margin-bottom: 12px;
-      text-align: center;
-      letter-spacing: 0.15em;
-      font-family: var(--font-display);
-      line-height: 1.2;
-    }
-
-    @media (min-width: 600px) {
-      .current-letter {
-        font-size: 2.5rem;
-        letter-spacing: 0.2em;
-      }
-    }
-
-    .controls-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 12px;
+    .stage-head{
+      padding: 12px 14px;
+      border-bottom: 3px solid var(--ink);
+      background: rgba(237,232,220,.55);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: var(--s-2);
       flex-wrap: wrap;
     }
-
-    .label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-text-light);
-      font-weight: 600;
+    .big-letter{
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing:-.02em;
     }
+    .mini{ font-size: 12px; font-weight: 900; color: var(--muted); letter-spacing:.10em; text-transform:uppercase; }
 
-    .select {
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-      color: var(--color-text);
-      font-weight: 500;
-      min-height: 32px;
-    }
-
-    @media (min-width: 600px) {
-      .select {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-      }
-    }
-
-    .color-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .color-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .color-dot.active {
-      border-color: var(--color-primary);
-      box-shadow: var(--shadow-md);
-    }
-
-    .canvas-wrap {
+    .canvas-wrap{
       position: relative;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      background: var(--color-primary-dark);
-      overflow: hidden;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow-sm);
-      aspect-ratio: 5 / 2;
-    }
-
-    #traceCanvas {
-      display: block;
       width: 100%;
-      height: 100%;
+      background: #fff;
       touch-action: none;
-      background: transparent;
+    }
+    canvas{ display:block; width:100%; height:auto; }
+    #bgCanvas{ position: relative; z-index: 1; }
+    #drawCanvas{
+      position:absolute;
+      inset: 0;
+      z-index: 2;
     }
 
-    .buttons-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+    .controls{
+      margin-top: var(--s-2);
+      display:grid;
+      gap: var(--s-2);
     }
-
-    .btn {
-      flex: 1 1 0;
-      min-width: 0;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      padding: 10px 14px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      background: var(--color-surface);
-      color: var(--color-text);
-      transition: var(--transition);
-      min-height: 44px;
+    .controls-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-2);
     }
-
-    @media (min-width: 600px) {
-      .btn {
-        padding: 12px 16px;
-        font-size: 0.85rem;
-      }
-    }
-
-    .btn:hover {
-      background: var(--color-bg);
-      border-color: var(--color-primary);
-    }
-
-    .btn-accent {
-      background: var(--color-accent);
-      color: var(--color-text);
-      border-color: var(--color-accent-dark);
-    }
-
-    .btn-check {
-      background: var(--color-success);
-      color: var(--color-text);
-      border-color: var(--color-primary);
-    }
-
-    .hint-row {
-      margin-bottom: 8px;
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: var(--color-text-light);
-    }
-
-    .hint-strong {
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: 4px;
-    }
-
-    .feedback-box {
+    .ctrl{
+      border: 2px solid var(--ink);
+      border-radius: 16px;
       padding: 12px;
-      border-radius: var(--radius-md);
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      min-height: 60px;
-      margin-bottom: 12px;
-      transition: var(--transition);
+      background: rgba(0,0,0,0.02);
     }
-
-    .feedback-box.hidden {
-      display: none;
+    .ctrl label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
     }
-
-    .feedback-box.success {
-      background: #e4fbe9;
-      border-color: var(--color-success);
+    input[type="range"]{ width:100%; }
+    .swatches{ display:flex; gap:10px; flex-wrap:wrap; }
+    .sw{
+      width: 44px; height: 36px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      background: var(--bg-muted);
+      cursor:pointer;
+      user-select:none;
     }
+    .sw[data-on="1"]{ outline: 3px solid var(--accent); outline-offset: 2px; }
 
-    .feedback-box.partial {
-      background: #fff4e6;
-      border-color: var(--color-accent);
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap: var(--s-2);
+      margin-top: var(--s-2);
     }
-
-    .feedback-box.try-again {
-      background: #fee2e2;
-      border-color: var(--color-error);
+    .btn{
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      background: var(--bg-card);
+      color: var(--muted);
+      font-family: var(--font);
+      font-weight: 900;
+      font-size: 14px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      user-select:none;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+      flex: 1 1 calc(50% - var(--s-2));
     }
+    .btn:hover{ box-shadow: var(--shadow); transform: translateY(-1px); }
+    .btn:active{ transform: translateY(1px); box-shadow:none; }
+    .btn.primary{ background: var(--accent); color: var(--bg-card); }
+    .btn.primary:hover{ filter: brightness(1.05); }
+    .btn.good{ background: rgba(123,160,138,.16); color: var(--ink); }
+    .btn.bad{ background: rgba(196,114,108,.12); color: var(--ink); }
 
-    .feedback-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--color-text);
-      margin-bottom: 6px;
+    .feedback{
+      margin-top: var(--s-2);
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      background: var(--bg-muted);
+      display:none;
+      gap: 10px;
+      align-items:flex-start;
     }
+    .feedback.open{ display:flex; }
+    .ficon{ font-size: 18px; line-height:1.2; }
+    .ftext{ font-size: 14px; font-weight: 900; color: var(--muted); }
+    .ftext strong{ color: var(--ink); }
 
-    .feedback-text {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: var(--color-text-light);
+    footer{
+      flex: 0 0 auto;
+      padding: var(--s-2) var(--s-3);
+      padding-bottom: max(var(--s-2), env(safe-area-inset-bottom));
+      border-top: 3px solid var(--ink);
+      background: var(--bg-card);
+      display:flex;
+      flex-wrap:wrap;
+      gap: var(--s-2);
     }
-
-    .score-bar {
-      margin-top: 8px;
-      height: 6px;
-      background: var(--color-border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
+    .btn-small{
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--ink);
+      background: var(--bg-muted);
+      color: var(--muted);
+      font-family: var(--font);
+      font-weight: 900;
+      font-size: 14px;
+      cursor:pointer;
+      flex: 1 1 calc(33.33% - var(--s-2));
     }
+    .btn-small.primary{ background: var(--accent); color: var(--bg-card); }
+    .btn-small:hover{ box-shadow: var(--shadow); transform: translateY(-1px); }
+    .btn-small:active{ transform: translateY(1px); box-shadow:none; }
 
-    .score-fill {
-      height: 100%;
-      background: var(--color-primary);
-      border-radius: var(--radius-sm);
-      transition: width 0.3s ease;
+    @media (max-width: 360px){
+      header{ padding: 0 var(--s-2); }
+      main{ padding: var(--s-2); }
+      footer{ padding: var(--s-2); }
+      .controls-grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
+
 <body>
-  <div class="app-wrapper">
-    <div class="header">
-      <div class="logo">✏️ Mein ABC</div>
-      <div class="mode-toggle">
-        <button class="mode-btn active" data-mode="upper">ABC</button>
-        <button class="mode-btn" data-mode="lower">abc</button>
-        <button class="mode-btn" data-mode="digits">123</button>
+  <div id="app">
+    <header>
+      <div class="brand">
+        <div class="title">Alphabet – Nachspuren</div>
+        <div class="subtitle">Ein Buchstabe pro Aufgabe · wie Paint</div>
       </div>
-    </div>
-
-    <div class="container">
-      <div class="card">
-        <div class="current-letter" id="currentPair">A a</div>
-
-        <div class="controls-row">
-          <span class="label">Zeichen</span>
-          <select id="charSelect" class="select"></select>
+      <div class="top-actions">
+        <div class="pill" id="coins-pill" role="button" tabindex="0" aria-label="Punkte">
+          <span class="icon">⭐</span>
+          <span class="val" id="coin-count">0</span>
         </div>
-
-        <div class="color-row">
-          <span class="label">Farbe</span>
-          <button class="color-dot" data-color="#FBBF24" style="background:#FBBF24;"></button>
-          <button class="color-dot active" data-color="#F3F4F6" style="background:#F3F4F6;"></button>
-          <button class="color-dot" data-color="#60A5FA" style="background:#60A5FA;"></button>
-          <button class="color-dot" data-color="#FB923C" style="background:#FB923C;"></button>
-          <button class="color-dot" data-color="#88B894" style="background:#88B894;"></button>
-          <button class="color-dot" data-color="#F472B6" style="background:#F472B6;"></button>
+        <div class="pill" id="help-pill" role="button" tabindex="0" aria-label="Tipp">
+          <span class="icon">💡</span>
+          <span class="val">Tipp</span>
         </div>
       </div>
+    </header>
 
-      <div class="canvas-wrap">
-        <canvas id="traceCanvas" width="1000" height="400"></canvas>
+    <main>
+      <div class="hero">
+        <h1>Spur den Buchstaben nach.</h1>
+        <p>Mit „Vorlage“ kannst du das Bild heller/dunkler machen. Radierer = Fehler weg. ⭐ gibt’s für gutes Nachspuren.</p>
       </div>
 
-      <div class="buttons-row">
-        <button id="btnPrev" class="btn">⬅️ Zurück</button>
-        <button id="btnRandom" class="btn btn-accent">🎲 Zufall</button>
-        <button id="btnNext" class="btn">Weiter ➡️</button>
-      </div>
-      
-      <div class="buttons-row">
-        <button id="btnClear" class="btn">🧽 Löschen</button>
-        <button id="btnCheck" class="btn btn-check">✓ Prüfen</button>
-        <button id="btnToggleGuide" class="btn">👁 Vorlage aus</button>
-      </div>
-
-      <div id="feedbackBox" class="feedback-box hidden">
-        <div class="feedback-title" id="feedbackTitle"></div>
-        <div class="feedback-text" id="feedbackText"></div>
-        <div class="score-bar">
-          <div class="score-fill" id="scoreFill" style="width: 0%"></div>
+      <section class="card">
+        <div class="row">
+          <div class="chip" id="task-chip">🔤 Buchstabe: …</div>
+          <div class="chip">📌 Fortschritt: <span id="prog-text">0/30</span></div>
         </div>
-      </div>
 
-      <div class="card hint-row">
-        <div id="exampleHint" class="hint-strong"></div>
-        <div id="tipHint"></div>
-      </div>
-    </div>
+        <div style="margin-top:12px;">
+          <div class="progress" aria-label="Fortschrittsbalken">
+            <div id="prog-bar"></div>
+          </div>
+        </div>
+
+        <div class="stage" style="margin-top:16px;">
+          <div class="stage-head">
+            <div>
+              <div class="big-letter" id="big-letter">…</div>
+              <div class="mini" id="mini-hint">Spur nach: langsam & sauber</div>
+            </div>
+            <div class="mini">Score: <span id="score">–</span></div>
+          </div>
+
+          <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="bgCanvas"></canvas>
+            <canvas id="drawCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="controls-grid">
+            <div class="ctrl">
+              <label>
+                <span>🖌️ Pinsel</span>
+                <span id="brushVal">18</span>
+              </label>
+              <input id="brush" type="range" min="6" max="34" value="18" />
+              <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                <button class="btn good" id="eraser" type="button" style="flex:1 1 auto;">🧽 Radierer: <span id="eraserOn">Aus</span></button>
+                <button class="btn" id="undo" type="button" style="flex:1 1 auto;">↩️ Undo</button>
+              </div>
+            </div>
+
+            <div class="ctrl">
+              <label>
+                <span>🧾 Vorlage</span>
+                <span id="tplVal">75%</span>
+              </label>
+              <input id="tpl" type="range" min="15" max="100" value="75" />
+              <div class="swatches" style="margin-top:10px;">
+                <div class="sw" data-color="#1f2a2e" data-on="1" title="Dunkel"></div>
+                <div class="sw" data-color="#2f6fa1" title="Blau"></div>
+                <div class="sw" data-color="#c4726c" title="Rot"></div>
+                <div class="sw" data-color="#2f9e6f" title="Grün"></div>
+                <div class="sw" data-color="#222222" title="Schwarz"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="prev" type="button">⬅️ Zurück</button>
+            <button class="btn" id="next" type="button">Weiter ➡️</button>
+            <button class="btn" id="random" type="button">🎲 Zufall</button>
+            <button class="btn bad" id="clear" type="button">🧼 Neu</button>
+            <button class="btn primary" id="check" type="button">✅ Prüfen</button>
+            <button class="btn good" id="markDone" type="button">⭐ Fertig</button>
+          </div>
+
+          <div class="feedback" id="fb" aria-live="polite">
+            <div class="ficon" id="fbI">✨</div>
+            <div class="ftext" id="fbT"><strong>…</strong></div>
+          </div>
+
+          <div class="mini" style="margin-top:10px;">
+            Vorlage-Datei: <strong>abcnachspuren.jpg</strong> (muss im selben Ordner liegen)
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <button class="btn-small" id="btn-home" type="button" title="Zurück">01</button>
+      <button class="btn-small" id="reload" type="button" title="Neu laden">⏻</button>
+      <a class="btn-small primary" href="https://humaneed.github.io/Datenschutz/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
+        🔒 Datenschutz
+      </a>
+    </footer>
   </div>
 
+  <!-- Hidden template image -->
+  <img id="tplImg" alt="" style="display:none" />
+
   <script>
-    const UPPER = "AÄBCDEFGHIJKLMNOÖPQRSTUVWÜXYZ".split("");
-    const LOWER = "aäbcdefghijklmnoöpqrstuvwüxyzß".split("");
-    const DIGITS = "0123456789".split("");
+    (() => {
+      'use strict';
 
-    const ASCENDERS = new Set(['b', 'd', 'f', 'h', 'k', 'l', 't', 'ß']);
-    const DESCENDERS = new Set(['g', 'j', 'p', 'q', 'y']);
-    const DOTS_ABOVE = new Set(['Ä', 'Ö', 'Ü', 'ä', 'ö', 'ü', 'i', 'j']);
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-    const LETTER_EXAMPLES = {
-      A: "A wie Apfel", Ä: "Ä wie Äpfel",
-      B: "B wie Ball", C: "C wie Computer",
-      D: "D wie Dinosaurier", E: "E wie Esel",
-      F: "F wie Fisch", G: "G wie Gitarre",
-      H: "H wie Herz", I: "I wie Igel",
-      J: "J wie Jacke", K: "K wie Kerze",
-      L: "L wie Leiter", M: "M wie Haus",
-      N: "N wie Nagel", O: "O wie Ofen", Ö: "Ö wie Öfen",
-      P: "P wie Palme", Q: "Q wie Qualle",
-      R: "R wie Rakete", S: "S wie Sonne",
-      T: "T wie Tiger", U: "U wie Uhr", Ü: "Ü wie Übung",
-      V: "V wie Vogel", W: "W wie Wolke",
-      X: "X wie Xylophon", Y: "Y wie Yacht",
-      Z: "Z wie Zeit"
-    };
-
-    const DIGIT_EXAMPLES = {
-      0: "0 – Ein runder Kreis.",
-      1: "1 – Ein Strich, ein Finger.",
-      2: "2 – Zwei Augen, zwei Schuhe.",
-      3: "3 – Drei Schritte.",
-      4: "4 – Vier Räder am Auto.",
-      5: "5 – Fünf Finger an der Hand.",
-      6: "6 – Sechs Bausteine.",
-      7: "7 – Sieben Wochentage.",
-      8: "8 – Wie ein Schneemann.",
-      9: "9 – Neun Punkte."
-    };
-
-    const modeButtons = Array.from(document.querySelectorAll(".mode-btn"));
-    const charSelect = document.getElementById("charSelect");
-    const currentPair = document.getElementById("currentPair");
-    const canvas = document.getElementById("traceCanvas");
-    const ctx = canvas.getContext("2d");
-    const btnPrev = document.getElementById("btnPrev");
-    const btnNext = document.getElementById("btnNext");
-    const btnRandom = document.getElementById("btnRandom");
-    const btnClear = document.getElementById("btnClear");
-    const btnCheck = document.getElementById("btnCheck");
-    const btnToggleGuide = document.getElementById("btnToggleGuide");
-    const colorDots = Array.from(document.querySelectorAll(".color-dot"));
-    const exampleHint = document.getElementById("exampleHint");
-    const tipHint = document.getElementById("tipHint");
-    const feedbackBox = document.getElementById("feedbackBox");
-    const feedbackTitle = document.getElementById("feedbackTitle");
-    const feedbackText = document.getElementById("feedbackText");
-    const scoreFill = document.getElementById("scoreFill");
-
-    let mode = "upper";
-    let list = UPPER;
-    let index = 0;
-    let currentChar = "A";
-    let penColor = "#F3F4F6";
-    let drawing = false;
-    let lastX = 0;
-    let lastY = 0;
-    let showGuide = true;
-
-    function setMode(newMode) {
-      mode = newMode;
-      if (mode === "upper") list = UPPER;
-      else if (mode === "lower") list = LOWER;
-      else list = DIGITS;
-
-      modeButtons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.mode === mode);
-      });
-
-      fillCharSelect();
-      setCharByIndex(0);
-    }
-
-    function fillCharSelect() {
-      charSelect.innerHTML = "";
-      list.forEach((ch, i) => {
-        const opt = document.createElement("option");
-        opt.value = String(i);
-        opt.textContent = ch;
-        charSelect.appendChild(opt);
-      });
-    }
-
-    function setCharByIndex(i) {
-      if (!list.length) return;
-      if (i < 0) i = list.length - 1;
-      if (i >= list.length) i = 0;
-      index = i;
-      currentChar = list[index];
-      charSelect.value = String(index);
-
-      const up = currentChar.toUpperCase();
-      const low = currentChar.toLowerCase();
-
-      if (mode === "upper") {
-        currentPair.textContent = up + " " + low;
-      } else if (mode === "lower") {
-        currentPair.textContent = up + " " + low;
-      } else {
-        currentPair.textContent = currentChar;
-      }
-
-      updateHints();
-      hideFeedback();
-      clearCanvas();
-    }
-
-    function updateHints() {
-      if (mode === "digits") {
-        exampleHint.textContent = DIGIT_EXAMPLES[currentChar] || ("Zahl " + currentChar + " schreiben üben.");
-        tipHint.textContent = "Sprich die Zahl laut aus und betrachte ihre Form genau. Fahre sie dann langsam mit dem Finger nach.";
-      } else {
-        const upper = currentChar.toUpperCase();
-        const base = LETTER_EXAMPLES[upper] || (upper + " schreiben üben.");
-        exampleHint.textContent = base;
-        tipHint.textContent = "Schau dir beide Buchstaben an: Wo beginnen sie? Spure dann langsam nach – erst den großen, dann den kleinen Buchstaben.";
-      }
-    }
-
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-
-      canvas.width = rect.width * ratio;
-      canvas.height = rect.height * ratio;
-
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      clearCanvas();
-    }
-
-    function clearCanvas() {
-      const w = canvas.clientWidth || canvas.width;
-      const h = canvas.clientHeight || canvas.height;
-      ctx.clearRect(0, 0, w, h);
-      drawGuidelinesAndLetter();
-      hideFeedback();
-    }
-
-    function drawGuidelinesAndLetter() {
-      const w = canvas.clientWidth || canvas.width;
-      const h = canvas.clientHeight || canvas.height;
-      if (!w || !h) return;
-
-      ctx.save();
-      
-      // Schullineatur nach Poster-Vorbild
-      // Verhältnis: Oberlänge 1.5 : x-Höhe 1 : Unterlänge 1
-      const totalHeight = h * 0.62; // Gesamthöhe des Lineatur-Systems
-      const xHeight = totalHeight / 3.5; // x-Höhe als Basis
-      
-      const centerY = h * 0.5;
-      
-      // Präzise Linienpositionierung
-      const lineAscender = centerY - (xHeight * 1.5) - (xHeight * 0.5); // Oberlängen-Linie
-      const lineMiddle = centerY - (xHeight * 0.5);                     // Mittellinie (x-Höhe oben)
-      const lineBase = centerY + (xHeight * 0.5);                       // Grundlinie
-      const lineDescender = lineBase + xHeight;                          // Unterlängen-Linie
-
-      const xLeft = w * 0.06;
-      const xRight = w * 0.94;
-
-      // Oberlängen-Linie (dezent gestrichelt)
-      ctx.strokeStyle = "rgba(168, 201, 184, 0.25)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 4]);
-      ctx.beginPath();
-      ctx.moveTo(xLeft, lineAscender);
-      ctx.lineTo(xRight, lineAscender);
-      ctx.stroke();
-      
-      // Mittellinie (gestrichelt)
-      ctx.strokeStyle = "rgba(168, 201, 184, 0.35)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(xLeft, lineMiddle);
-      ctx.lineTo(xRight, lineMiddle);
-      ctx.stroke();
-      
-      // Grundlinie (durchgezogen, betont)
-      ctx.strokeStyle = "rgba(168, 201, 184, 0.5)";
-      ctx.lineWidth = 1.8;
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(xLeft, lineBase);
-      ctx.lineTo(xRight, lineBase);
-      ctx.stroke();
-      
-      // Unterlängen-Linie (dezent gestrichelt)
-      ctx.strokeStyle = "rgba(168, 201, 184, 0.25)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 4]);
-      ctx.beginPath();
-      ctx.moveTo(xLeft, lineDescender);
-      ctx.lineTo(xRight, lineDescender);
-      ctx.stroke();
-
-      // Vertikale Hilfslinie links (sehr dezent)
-      ctx.setLineDash([2, 5]);
-      ctx.lineWidth = 0.8;
-      ctx.strokeStyle = "rgba(168, 201, 184, 0.2)";
-      ctx.beginPath();
-      ctx.moveTo(w * 0.12, lineAscender - xHeight * 0.15);
-      ctx.lineTo(w * 0.12, lineDescender + xHeight * 0.15);
-      ctx.stroke();
-      
-      ctx.restore();
-
-      if (!showGuide || !currentChar) return;
-
-      ctx.save();
-      const isDigit = mode === "digits";
-
-      if (isDigit) {
-        // Ziffern: von Oberlängen-Linie bis Grundlinie (wie Großbuchstaben)
-        const digitHeight = lineBase - lineAscender;
-        const fontSize = digitHeight * 0.88;
-        ctx.font = `700 ${fontSize}px Arial, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "rgba(168, 201, 184, 0.22)";
-        ctx.fillText(currentChar, w * 0.5, lineBase);
-      } else {
-        const up = currentChar.toUpperCase();
-        const low = currentChar.toLowerCase();
-
-        // Großbuchstaben: von Oberlängen-Linie bis Grundlinie
-        const upperHeight = lineBase - lineAscender;
-        const upperFontSize = upperHeight * 0.88;
-
-        ctx.font = `700 ${upperFontSize}px Arial, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "rgba(168, 201, 184, 0.22)";
-
-        // Position Großbuchstabe: 32% von links
-        const upperX = w * 0.32;
-        ctx.fillText(up, upperX, lineBase);
-
-        // Kleinbuchstaben: abhängig von Ober-/Unterlängen
-        let lowerFontSize, lowerBaseline;
-
-        if (ASCENDERS.has(low)) {
-          // Buchstaben mit Oberlängen: von Oberlängen-Linie bis Grundlinie
-          const ascenderHeight = lineBase - lineAscender;
-          lowerFontSize = ascenderHeight * 0.88;
-          lowerBaseline = lineBase;
-        } else if (DESCENDERS.has(low)) {
-          // Buchstaben mit Unterlängen: von Mittellinie bis Unterlängen-Linie
-          const descenderHeight = lineDescender - lineMiddle;
-          lowerFontSize = descenderHeight * 0.88;
-          lowerBaseline = lineDescender;
-        } else {
-          // Normale Kleinbuchstaben: x-Höhe (Mittellinie bis Grundlinie)
-          const normalHeight = lineBase - lineMiddle;
-          lowerFontSize = normalHeight * 0.88;
-          lowerBaseline = lineBase;
-        }
-
-        ctx.font = `700 ${lowerFontSize}px Arial, sans-serif`;
-        // Position Kleinbuchstabe: 68% von links (guter Abstand zum Großbuchstaben)
-        const lowerX = w * 0.68;
-        ctx.fillText(low, lowerX, lowerBaseline);
-      }
-
-      ctx.restore();
-    }
-
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      if (e.touches && e.touches[0]) {
-        return {
-          x: e.touches[0].clientX - rect.left,
-          y: e.touches[0].clientY - rect.top
-        };
-      }
-      return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+      // ===== Shared LS (Kidsneed) =====
+      const LS = {
+        coins: 'kidsneed_coins',
+        done:  'kidsneed_alpha_trace_done',
+        idx:   'kidsneed_alpha_trace_idx'
       };
-    }
 
-    function startDraw(e) {
-      e.preventDefault();
-      const pos = getPos(e);
-      drawing = true;
-      lastX = pos.x;
-      lastY = pos.y;
-    }
+      const getInt = (k, fb=0) => {
+        try { const v = localStorage.getItem(k); const n = v ? parseInt(v,10) : fb; return Number.isFinite(n) ? n : fb; }
+        catch { return fb; }
+      };
+      const setStr = (k,v) => { try { localStorage.setItem(k, String(v)); } catch {} };
+      const getObj = (k, fb) => {
+        try { const raw = localStorage.getItem(k); return raw ? (JSON.parse(raw) ?? fb) : fb; }
+        catch { return fb; }
+      };
+      const setObj = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-    function moveDraw(e) {
-      if (!drawing) return;
-      e.preventDefault();
-      const pos = getPos(e);
-      const width = canvas.clientWidth || 300;
-      const base = 0.010; // Etwas dünner für präziseres Schreiben
-      ctx.lineWidth = Math.max(width * base, 2.5);
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.strokeStyle = penColor;
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-      lastX = pos.x;
-      lastY = pos.y;
-    }
+      const bump = (el) => {
+        if (!el) return;
+        el.style.transform = 'scale(1.08)';
+        setTimeout(() => el.style.transform = '', 160);
+      };
 
-    function endDraw(e) {
-      if (!drawing) return;
-      e.preventDefault();
-      drawing = false;
-    }
+      // ===== Home button =====
+      const computeHomeHref = () => {
+        const p = location.pathname;
+        if (p.includes('/ueben/alphabet-nachspuren/')) return '../../';
+        return '/';
+      };
 
-    canvas.addEventListener("mousedown", startDraw);
-    canvas.addEventListener("mousemove", moveDraw);
-    window.addEventListener("mouseup", endDraw);
-    canvas.addEventListener("touchstart", startDraw, { passive: false });
-    canvas.addEventListener("touchmove", moveDraw, { passive: false });
-    canvas.addEventListener("touchend", endDraw, { passive: false });
-    canvas.addEventListener("touchcancel", endDraw, { passive: false });
+      // ===== Tasks: Boxes (aus deinem Bild erkannt) =====
+      // Box = [x0,y0,x1,y1] im Originalbild (1069x1500).
+      const TASKS = [
+        { id:'Aa', label:'A a', box:[37,220,203,358] },
+        { id:'Bb', label:'B b', box:[245,220,406,358] },
+        { id:'Cc', label:'C c', box:[447,220,608,358] },
+        { id:'Dd', label:'D d', box:[652,220,824,358] },
+        { id:'Ee', label:'E e', box:[866,220,1019,358] },
 
-    function checkDrawing() {
-      const refCanvas = createReferenceCanvas();
-      const userCanvas = canvas;
-      const refData = analyzeCanvas(refCanvas);
-      const userData = analyzeCanvas(userCanvas);
-      const score = compareDrawings(refData, userData);
-      showFeedback(score);
-    }
+        { id:'Ff', label:'F f', box:[39,428,175,582] },
+        { id:'Gg', label:'G g', box:[236,428,407,582] },
+        { id:'Hh', label:'H h', box:[445,428,604,582] },
+        { id:'Ii', label:'I i', box:[699,428,781,582] },
+        { id:'Jj', label:'J j', box:[893,428,995,582] },
 
-    function createReferenceCanvas() {
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
+        { id:'Kk', label:'K k', box:[40,636,190,774] },
+        { id:'Ll', label:'L l', box:[241,636,366,774] },
+        { id:'Mm', label:'M m', box:[416,636,639,774] },
+        { id:'Nn', label:'N n', box:[654,636,822,774] },
+        { id:'Oo', label:'O o', box:[859,636,1035,774] },
 
-      const w = canvas.clientWidth || canvas.width;
-      const h = canvas.clientHeight || canvas.height;
-      tempCanvas.width = w;
-      tempCanvas.height = h;
+        { id:'Pp', label:'P p', box:[41,844,196,983] },
+        { id:'Qq', label:'Q q', box:[241,844,409,983] },
+        { id:'Rr', label:'R r', box:[452,844,578,983] },
+        { id:'Ss', label:'S s', box:[668,844,808,983] },
+        { id:'Tt', label:'T t', box:[875,844,1005,983] },
 
-      // Gleiche präzise Proportionen wie in drawGuidelinesAndLetter
-      const totalHeight = h * 0.62;
-      const xHeight = totalHeight / 3.5;
-      
-      const centerY = h * 0.5;
-      
-      const lineAscender = centerY - (xHeight * 1.5) - (xHeight * 0.5);
-      const lineMiddle = centerY - (xHeight * 0.5);
-      const lineBase = centerY + (xHeight * 0.5);
-      const lineDescender = lineBase + xHeight;
+        { id:'Uu', label:'U u', box:[0,1051,201,1191] },
+        { id:'Vv', label:'V v', box:[235,1051,402,1191] },
+        { id:'Ww', label:'W w', box:[421,1051,637,1191] },
+        { id:'Xx', label:'X x', box:[667,1051,811,1191] },
+        { id:'Yy', label:'Y y', box:[878,1051,1014,1191] },
 
-      const isDigit = mode === "digits";
+        { id:'Zz', label:'Z z', box:[39,1254,197,1400] },
+        { id:'Ää', label:'Ä ä', box:[247,1254,403,1400] },
+        { id:'Öö', label:'Ö ö', box:[444,1254,618,1400] },
+        { id:'Üü', label:'Ü ü', box:[656,1254,826,1400] },
+        { id:'ß',  label:'ß',   box:[905,1254,993,1400] },
+      ];
 
-      if (isDigit) {
-        const digitHeight = lineBase - lineAscender;
-        const fontSize = digitHeight * 0.88;
-        tempCtx.font = `700 ${fontSize}px Arial, sans-serif`;
-        tempCtx.textAlign = "center";
-        tempCtx.textBaseline = "alphabetic";
-        tempCtx.fillStyle = "#ffffff";
-        tempCtx.fillText(currentChar, w * 0.5, lineBase);
-      } else {
-        const up = currentChar.toUpperCase();
-        const low = currentChar.toLowerCase();
-        
-        const upperHeight = lineBase - lineAscender;
-        const upperFontSize = upperHeight * 0.88;
+      // ===== UI =====
+      const coinsPill = $('#coins-pill');
+      const coinCount = $('#coin-count');
+      const taskChip = $('#task-chip');
+      const bigLetter = $('#big-letter');
+      const miniHint  = $('#mini-hint');
+      const scoreEl   = $('#score');
+      const fb = $('#fb');
+      const fbI = $('#fbI');
+      const fbT = $('#fbT');
+      const progText = $('#prog-text');
+      const progBar  = $('#prog-bar');
 
-        tempCtx.font = `700 ${upperFontSize}px Arial, sans-serif`;
-        tempCtx.textAlign = "center";
-        tempCtx.textBaseline = "alphabetic";
-        tempCtx.fillStyle = "#ffffff";
-        tempCtx.fillText(up, w * 0.32, lineBase);
+      const brush = $('#brush');
+      const brushVal = $('#brushVal');
+      const tpl = $('#tpl');
+      const tplVal = $('#tplVal');
+      const eraserBtn = $('#eraser');
+      const eraserOn = $('#eraserOn');
 
-        let lowerFontSize, lowerBaseline;
-        
-        if (ASCENDERS.has(low)) {
-          const ascenderHeight = lineBase - lineAscender;
-          lowerFontSize = ascenderHeight * 0.88;
-          lowerBaseline = lineBase;
-        } else if (DESCENDERS.has(low)) {
-          const descenderHeight = lineDescender - lineMiddle;
-          lowerFontSize = descenderHeight * 0.88;
-          lowerBaseline = lineDescender;
-        } else {
-          const normalHeight = lineBase - lineMiddle;
-          lowerFontSize = normalHeight * 0.88;
-          lowerBaseline = lineBase;
+      const prevBtn = $('#prev');
+      const nextBtn = $('#next');
+      const rndBtn  = $('#random');
+      const clearBtn= $('#clear');
+      const undoBtn = $('#undo');
+      const checkBtn= $('#check');
+      const doneBtn = $('#markDone');
+      const helpPill= $('#help-pill');
+
+      const bgCanvas = $('#bgCanvas');
+      const drawCanvas = $('#drawCanvas');
+      const wrap = $('#canvas-wrap');
+      const bgCtx = bgCanvas.getContext('2d', { willReadFrequently: true });
+      const drawCtx = drawCanvas.getContext('2d', { willReadFrequently: true });
+
+      // ===== State =====
+      let idx = Math.max(0, Math.min(TASKS.length-1, getInt(LS.idx, 0)));
+      let doneSet = new Set(getObj(LS.done, []));
+      let isEraser = false;
+
+      let dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+      let painting = false;
+      let last = null;
+      let undoStack = []; // ImageData snapshots (limited)
+      const UNDO_MAX = 12;
+
+      let templateImg = $('#tplImg');
+      let maskData = null; // Uint8Array, mw*mh
+      let maskW = 0, maskH = 0;
+
+      const showFeedback = (icon, html) => {
+        fbI.textContent = icon;
+        fbT.innerHTML = html;
+        fb.classList.add('open');
+      };
+      const closeFeedback = () => fb.classList.remove('open');
+
+      const updateCoins = () => {
+        coinCount.textContent = getInt(LS.coins, 0);
+      };
+      const addCoin = (n=1) => {
+        const c = getInt(LS.coins, 0) + n;
+        setStr(LS.coins, c);
+        updateCoins();
+        bump(coinsPill);
+      };
+
+      const updateProgress = () => {
+        const doneCount = doneSet.size;
+        progText.textContent = `${doneCount}/${TASKS.length}`;
+        progBar.style.width = `${Math.round((doneCount / TASKS.length) * 100)}%`;
+      };
+
+      // ===== Canvas sizing =====
+      const fitCanvas = () => {
+        // Stage should be 16:9-ish but adapt
+        const w = wrap.clientWidth;
+        const h = Math.max(280, Math.min(420, Math.round(w * 0.66))); // pleasant
+        bgCanvas.style.height = h + 'px';
+        drawCanvas.style.height = h + 'px';
+        bgCanvas.width = Math.round(w * dpr);
+        bgCanvas.height = Math.round(h * dpr);
+        drawCanvas.width = Math.round(w * dpr);
+        drawCanvas.height = Math.round(h * dpr);
+      };
+
+      // ===== Render current task (crop from template image) =====
+      const renderTask = () => {
+        const t = TASKS[idx];
+
+        setStr(LS.idx, idx);
+
+        taskChip.textContent = `🔤 Buchstabe: ${t.label}`;
+        bigLetter.textContent = t.label;
+        miniHint.textContent = doneSet.has(t.id)
+          ? '✅ Schon geschafft – du kannst nochmal üben!'
+          : 'Spur nach: langsam, saubere Linien, lieber einmal richtig';
+
+        closeFeedback();
+        scoreEl.textContent = '–';
+
+        // reset drawing
+        clearDrawing(true);
+
+        // draw crop into bg canvas
+        fitCanvas();
+
+        const [x0,y0,x1,y1] = t.box;
+        const sw = (x1-x0), sh = (y1-y0);
+
+        bgCtx.save();
+        bgCtx.setTransform(1,0,0,1,0,0);
+        bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+
+        // background fill
+        bgCtx.fillStyle = '#ffffff';
+        bgCtx.fillRect(0,0,bgCanvas.width,bgCanvas.height);
+
+        // scale crop to fit canvas (with padding)
+        const pad = 16 * dpr;
+        const cw = bgCanvas.width, ch = bgCanvas.height;
+        const availW = cw - pad*2;
+        const availH = ch - pad*2;
+        const scale = Math.min(availW/sw, availH/sh);
+
+        const dw = sw * scale;
+        const dh = sh * scale;
+        const dx = (cw - dw)/2;
+        const dy = (ch - dh)/2;
+
+        // Apply template opacity via global alpha
+        const alpha = (parseInt(tpl.value,10) || 75) / 100;
+        bgCtx.globalAlpha = alpha;
+
+        bgCtx.imageSmoothingEnabled = true;
+        bgCtx.imageSmoothingQuality = 'high';
+
+        // draw the cropped portion
+        bgCtx.drawImage(templateImg, x0, y0, sw, sh, dx, dy, dw, dh);
+
+        // overlay a subtle frame
+        bgCtx.globalAlpha = 1;
+        bgCtx.lineWidth = 2 * dpr;
+        bgCtx.strokeStyle = 'rgba(45,42,38,.20)';
+        bgCtx.strokeRect(dx, dy, dw, dh);
+
+        bgCtx.restore();
+
+        // build letter mask for scoring (from same crop)
+        buildMaskFromCrop(x0,y0,sw,sh, dx,dy,dw,dh);
+      };
+
+      // ===== Build mask for scoring =====
+      // We create a downscaled mask (256x256-ish) based on the crop pixels (notebook lines should be ignored).
+      const buildMaskFromCrop = (x0,y0,sw,sh, dx,dy,dw,dh) => {
+        const mw = 256;
+        const mh = 256;
+        maskW = mw; maskH = mh;
+        const off = document.createElement('canvas');
+        off.width = mw; off.height = mh;
+        const oc = off.getContext('2d', { willReadFrequently: true });
+
+        // draw crop into offscreen
+        oc.clearRect(0,0,mw,mh);
+        oc.drawImage(templateImg, x0, y0, sw, sh, 0, 0, mw, mh);
+
+        const imgd = oc.getImageData(0,0,mw,mh).data;
+        const m = new Uint8Array(mw*mh);
+
+        // threshold: letters are darker/colored than paper lines
+        for (let i=0, p=0; i<imgd.length; i+=4, p++){
+          const r = imgd[i], g = imgd[i+1], b = imgd[i+2];
+          const max = Math.max(r,g,b);
+          const min = Math.min(r,g,b);
+          const sat = max - min;
+          const br = (r+g+b)/3;
+
+          // letter pixel heuristic:
+          // - either sufficiently saturated OR sufficiently dark
+          // - and not near-white
+          const isLetter = (br < 222) || (sat > 22 && br < 246);
+
+          m[p] = isLetter ? 1 : 0;
         }
 
-        tempCtx.font = `700 ${lowerFontSize}px Arial, sans-serif`;
-        tempCtx.fillText(low, w * 0.68, lowerBaseline);
-      }
-
-      return tempCanvas;
-    }
-
-    function analyzeCanvas(cnv) {
-      const ctx = cnv.getContext('2d');
-      const w = cnv.width;
-      const h = cnv.height;
-      const imageData = ctx.getImageData(0, 0, w, h);
-      const pixels = imageData.data;
-
-      let filledPixels = 0;
-      let minX = w, maxX = 0, minY = h, maxY = 0;
-      const regions = { top: 0, middle: 0, bottom: 0, left: 0, right: 0, center: 0 };
-      let topQuarterPixels = 0;
-      const topQuarterLimit = h * 0.25;
-
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const idx = (y * w + x) * 4;
-          const alpha = pixels[idx + 3];
-
-          if (alpha > 50) {
-            filledPixels++;
-
-            if (x < minX) minX = x;
-            if (x > maxX) maxX = x;
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
-
-            if (y < topQuarterLimit) {
-              topQuarterPixels++;
+        // small dilation for tolerance
+        const dil = new Uint8Array(mw*mh);
+        const rad = 2;
+        for (let y=0; y<mh; y++){
+          for (let x=0; x<mw; x++){
+            let on = 0;
+            for (let yy=Math.max(0,y-rad); yy<=Math.min(mh-1,y+rad) && !on; yy++){
+              for (let xx=Math.max(0,x-rad); xx<=Math.min(mw-1,x+rad); xx++){
+                if (m[yy*mw + xx]) { on = 1; break; }
+              }
             }
-
-            if (y < h * 0.33) regions.top++;
-            else if (y > h * 0.66) regions.bottom++;
-            else regions.middle++;
-
-            if (x < w * 0.33) regions.left++;
-            else if (x > w * 0.66) regions.right++;
-            else regions.center++;
+            dil[y*mw + x] = on;
           }
         }
-      }
 
-      const boundingWidth = maxX - minX;
-      const boundingHeight = maxY - minY;
-      const coverage = filledPixels / (w * h);
+        // store
+        maskData = dil;
 
-      return {
-        filledPixels,
-        coverage,
-        boundingWidth,
-        boundingHeight,
-        centerX: (minX + maxX) / 2,
-        centerY: (minY + maxY) / 2,
-        regions,
-        width: w,
-        height: h,
-        topQuarterPixels,
-        topQuarterRatio: filledPixels ? topQuarterPixels / filledPixels : 0
+        // store mapping to screen area for scoring
+        // We score using the drawn canvas area that corresponds to the crop area.
+        // We can recompute mapping when scoring by finding where crop sits: we already use dx,dy,dw,dh.
+        // Store for current task:
+        TASKS[idx]._map = { dx, dy, dw, dh };
       };
-    }
 
-    function compareDrawings(refData, userData) {
-      let score = 0;
-      const maxScore = 100;
+      // ===== Drawing =====
+      const pushUndo = () => {
+        try{
+          const snap = drawCtx.getImageData(0,0,drawCanvas.width, drawCanvas.height);
+          undoStack.push(snap);
+          if (undoStack.length > UNDO_MAX) undoStack.shift();
+        } catch {}
+      };
 
-      const up = currentChar.toUpperCase();
-      const low = currentChar.toLowerCase();
-      const hasDots = DOTS_ABOVE.has(up) || DOTS_ABOVE.has(low);
+      const clearDrawing = (hard=false) => {
+        drawCtx.save();
+        drawCtx.setTransform(1,0,0,1,0,0);
+        drawCtx.clearRect(0,0,drawCanvas.width, drawCanvas.height);
+        drawCtx.restore();
+        if (hard) undoStack = [];
+        else pushUndo();
+      };
 
-      if (userData.filledPixels < 100) return 0;
-      const drawingAmount = Math.min(1, userData.filledPixels / 200);
-      score += drawingAmount * 15;
+      const setBrushStyle = () => {
+        const size = parseInt(brush.value,10) || 18;
+        brushVal.textContent = size;
 
-      const coveragePoints = hasDots ? 20 : 25;
-      const coverageRatio = userData.coverage / refData.coverage;
-      if (coverageRatio >= 0.5 && coverageRatio <= 2.0) {
-        const deviation = Math.abs(1 - coverageRatio);
-        if (deviation < 0.3) {
-          score += coveragePoints * (1 - deviation / 0.3);
+        drawCtx.lineCap = 'round';
+        drawCtx.lineJoin = 'round';
+        drawCtx.lineWidth = size * dpr;
+
+        if (isEraser){
+          drawCtx.globalCompositeOperation = 'destination-out';
+          drawCtx.strokeStyle = 'rgba(0,0,0,1)';
         } else {
-          score += coveragePoints * Math.max(0, (0.5 - deviation) / 0.2);
+          drawCtx.globalCompositeOperation = 'source-over';
+          drawCtx.strokeStyle = currentColor;
         }
-      }
+      };
 
-      if (hasDots) {
-        const refTopRatio = refData.topQuarterRatio;
-        const userTopRatio = userData.topQuarterRatio;
-        const topDiff = Math.abs(refTopRatio - userTopRatio);
+      let currentColor = '#1f2a2e';
 
-        if (topDiff < 0.05) {
-          score += 10;
-        } else if (topDiff < 0.1) {
-          score += 7;
-        } else if (topDiff < 0.15) {
-          score += 4;
+      const setColorUI = (hex) => {
+        currentColor = hex;
+        $$('.sw').forEach(sw => sw.dataset.on = (sw.dataset.color === hex ? '1' : '0'));
+        if (!isEraser) setBrushStyle();
+      };
+
+      const getPos = (e) => {
+        const rect = drawCanvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * dpr;
+        const y = (e.clientY - rect.top) * dpr;
+        return {x,y};
+      };
+
+      const begin = (e) => {
+        painting = true;
+        last = getPos(e);
+        pushUndo();
+        setBrushStyle();
+        drawCtx.beginPath();
+        drawCtx.moveTo(last.x, last.y);
+      };
+      const move = (e) => {
+        if (!painting) return;
+        const p = getPos(e);
+        drawCtx.lineTo(p.x, p.y);
+        drawCtx.stroke();
+        last = p;
+      };
+      const end = () => {
+        painting = false;
+        last = null;
+      };
+
+      // Pointer events
+      drawCanvas.addEventListener('pointerdown', (e) => { drawCanvas.setPointerCapture(e.pointerId); begin(e); });
+      drawCanvas.addEventListener('pointermove', move);
+      drawCanvas.addEventListener('pointerup', end);
+      drawCanvas.addEventListener('pointercancel', end);
+      drawCanvas.addEventListener('pointerleave', end);
+
+      // ===== Scoring =====
+      const scoreNow = () => {
+        const t = TASKS[idx];
+        if (!maskData || !t._map) {
+          showFeedback('⚠️', `<strong>Noch nicht bereit.</strong> Bild lädt noch.`);
+          return null;
         }
-      } else {
-        score += 5;
-      }
 
-      const centerDiffX = Math.abs(userData.centerX - refData.centerX);
-      const centerDiffY = Math.abs(userData.centerY - refData.centerY);
-      const maxCenterDiff = Math.max(userData.width, userData.height) * 0.2;
-      const totalCenterDiff = (centerDiffX + centerDiffY) / maxCenterDiff;
+        // Get drawn pixels in crop area only
+        const { dx, dy, dw, dh } = t._map;
+        const x0 = Math.max(0, Math.floor(dx));
+        const y0 = Math.max(0, Math.floor(dy));
+        const x1 = Math.min(drawCanvas.width, Math.ceil(dx+dw));
+        const y1 = Math.min(drawCanvas.height, Math.ceil(dy+dh));
 
-      if (totalCenterDiff < 0.5) {
-        score += 30 * (1 - totalCenterDiff / 0.5);
-      } else if (totalCenterDiff < 1.0) {
-        score += 30 * Math.max(0, (1.0 - totalCenterDiff) / 0.5) * 0.3;
-      }
+        let img;
+        try { img = drawCtx.getImageData(x0,y0,x1-x0,y1-y0).data; }
+        catch { return null; }
 
-      let regionScore = 0;
-      const regionKeys = ['top', 'middle', 'bottom', 'left', 'right', 'center'];
+        // Sample drawn pixels (alpha > 0)
+        let drawn = 0;
+        let hit = 0;
 
-      regionKeys.forEach(key => {
-        const refRatio = refData.regions[key] / refData.filledPixels || 0;
-        const userRatio = userData.regions[key] / userData.filledPixels || 0;
-        const diff = Math.abs(refRatio - userRatio);
+        const w = (x1-x0), h = (y1-y0);
+        // step to speed up
+        const step = 2;
 
-        if (diff < 0.1) {
-          regionScore += 1 - (diff / 0.1);
-        } else if (diff < 0.2) {
-          regionScore += (0.2 - diff) / 0.1 * 0.2;
+        for (let y=0; y<h; y+=step){
+          for (let x=0; x<w; x+=step){
+            const i = (y*w + x) * 4;
+            const a = img[i+3];
+            if (a > 10){
+              drawn++;
+              // map to mask coords (mw,mh) based on crop area
+              const mx = Math.min(maskW-1, Math.max(0, Math.floor((x / w) * maskW)));
+              const my = Math.min(maskH-1, Math.max(0, Math.floor((y / h) * maskH)));
+              if (maskData[my*maskW + mx]) hit++;
+            }
+          }
+        }
+
+        if (drawn < 40){
+          return { pct: 0, drawn, hit };
+        }
+
+        const pct = Math.round((hit / drawn) * 100);
+        return { pct, drawn, hit };
+      };
+
+      // ===== Done / reward =====
+      const markDone = (forced=false) => {
+        const t = TASKS[idx];
+        const s = scoreNow();
+
+        // if forced, allow mark anyway
+        if (!forced && s && s.drawn >= 40 && s.pct < 60){
+          showFeedback('💡', `<strong>Noch nicht.</strong> Dein Treffer ist <strong>${s.pct}%</strong>. Versuch langsam über die Buchstabenform zu malen.`);
+          return;
+        }
+
+        if (!doneSet.has(t.id)){
+          doneSet.add(t.id);
+          setObj(LS.done, Array.from(doneSet));
+          addCoin(1);
+          showFeedback('✅', `<strong>Geschafft!</strong> ${t.label} gespeichert. ⭐ +1`);
+        } else {
+          showFeedback('✨', `<strong>Super!</strong> ${t.label} nochmal geübt.`);
+        }
+
+        updateProgress();
+      };
+
+      // ===== Events =====
+      window.addEventListener('resize', () => {
+        dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+        renderTask();
+      });
+
+      brush.addEventListener('input', () => setBrushStyle());
+
+      tpl.addEventListener('input', () => {
+        tplVal.textContent = `${tpl.value}%`;
+        renderTask();
+      });
+
+      eraserBtn.addEventListener('click', () => {
+        isEraser = !isEraser;
+        eraserOn.textContent = isEraser ? 'An' : 'Aus';
+        eraserBtn.classList.toggle('primary', isEraser);
+        setBrushStyle();
+      });
+
+      undoBtn.addEventListener('click', () => {
+        if (!undoStack.length) return;
+        const snap = undoStack.pop();
+        if (!snap) return;
+        drawCtx.putImageData(snap, 0, 0);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        clearDrawing(false);
+        scoreEl.textContent = '–';
+        showFeedback('🧼', `<strong>Neu.</strong> Du kannst nochmal sauber nachspuren.`);
+      });
+
+      prevBtn.addEventListener('click', () => {
+        idx = (idx - 1 + TASKS.length) % TASKS.length;
+        renderTask();
+      });
+
+      nextBtn.addEventListener('click', () => {
+        idx = (idx + 1) % TASKS.length;
+        renderTask();
+      });
+
+      rndBtn.addEventListener('click', () => {
+        idx = Math.floor(Math.random() * TASKS.length);
+        renderTask();
+      });
+
+      checkBtn.addEventListener('click', () => {
+        const s = scoreNow();
+        if (!s){
+          showFeedback('⚠️', `<strong>Geht noch nicht.</strong> Bild lädt noch.`);
+          return;
+        }
+        if (s.drawn < 40){
+          scoreEl.textContent = '–';
+          showFeedback('🧩', `<strong>Noch fast leer.</strong> Mal erst ein bisschen über den Buchstaben.`);
+          return;
+        }
+        scoreEl.textContent = `${s.pct}%`;
+        if (s.pct >= 80){
+          showFeedback('🏆', `<strong>Sehr gut!</strong> Treffer <strong>${s.pct}%</strong>. Das ist richtig sauber.`);
+        } else if (s.pct >= 60){
+          showFeedback('✅', `<strong>Gut!</strong> Treffer <strong>${s.pct}%</strong>. Noch etwas langsamer = noch besser.`);
+        } else {
+          showFeedback('💡', `<strong>Weiter üben.</strong> Treffer <strong>${s.pct}%</strong>. Versuch die Linie direkt über dem Buchstaben zu halten.`);
         }
       });
 
-      score += (regionScore / regionKeys.length) * 20;
+      doneBtn.addEventListener('click', () => markDone(false));
 
-      return Math.min(maxScore, Math.max(0, score));
-    }
-
-    function showFeedback(score) {
-      feedbackBox.classList.remove('hidden', 'success', 'partial', 'try-again');
-
-      const up = currentChar.toUpperCase();
-      const low = currentChar.toLowerCase();
-      const hasDots = DOTS_ABOVE.has(up) || DOTS_ABOVE.has(low);
-
-      let emoji, title, text, cssClass;
-
-      if (score >= 85) {
-        emoji = "🌟";
-        title = "Perfekt!";
-        text = hasDots
-          ? "Super! Du hast den Buchstaben sehr genau nachgespurt. Die Punkte oben sind auch richtig!"
-          : "Super! Du hast den Buchstaben sehr genau nachgespurt und gut auf die Linien geachtet.";
-        cssClass = "success";
-      } else if (score >= 70) {
-        emoji = "⭐";
-        title = "Sehr gut!";
-        text = hasDots
-          ? "Prima! Deine Schrift sieht gut aus. Die Punkte sind da und die Form stimmt."
-          : "Prima! Deine Schrift sieht gut aus. Die Form stimmt und du bleibst auf den Linien.";
-        cssClass = "success";
-      } else if (score >= 50) {
-        emoji = "✅";
-        title = "Geschafft!";
-        text = hasDots
-          ? "Gut gemacht! Die Form ist erkennbar und die Punkte sind da. Übe weiter!"
-          : "Gut gemacht! Die Form ist erkennbar. Übe weiter für noch mehr Genauigkeit!";
-        cssClass = "success";
-      } else if (score >= 35) {
-        emoji = "💪";
-        title = "Fast geschafft!";
-        text = hasDots
-          ? "Fast! Achte auf die Punkte oben – sie gehören zum Buchstaben. Spure langsam nach!"
-          : "Fast! Versuch die Vorlage genauer nachzuspuren. Folge den Linien langsam.";
-        cssClass = "partial";
-      } else {
-        emoji = "🎯";
-        title = "Versuch es nochmal!";
-        text = hasDots
-          ? "Schau dir die Vorlage gut an: Der Buchstabe hat Punkte oben. Spure beides nach!"
-          : "Schau dir die Vorlage gut an: Wo beginnt der Buchstabe? Spure langsam nach!";
-        cssClass = "try-again";
-      }
-
-      feedbackBox.classList.add(cssClass);
-      feedbackTitle.textContent = emoji + " " + title;
-      feedbackText.textContent = text;
-      scoreFill.style.width = score + "%";
-    }
-
-    function hideFeedback() {
-      feedbackBox.classList.add('hidden');
-      scoreFill.style.width = "0%";
-    }
-
-    colorDots.forEach(dot => {
-      dot.addEventListener("click", () => {
-        colorDots.forEach(d => d.classList.remove("active"));
-        dot.classList.add("active");
-        penColor = dot.dataset.color;
+      helpPill.addEventListener('click', () => {
+        showFeedback('💡', `<strong>So geht’s:</strong><br>
+          1) Male langsam über die Buchstabenform.<br>
+          2) Nutze „Vorlage“, wenn’s zu dunkel/hell ist.<br>
+          3) Radierer an, Fehler weg.<br>
+          4) „Prüfen“ zeigt deinen Treffer.<br>
+          5) „Fertig“ speichert + ⭐.`);
+        bump(helpPill);
       });
-    });
 
-    btnPrev.addEventListener("click", () => setCharByIndex(index - 1));
-    btnNext.addEventListener("click", () => setCharByIndex(index + 1));
-    btnRandom.addEventListener("click", () => {
-      const rnd = Math.floor(Math.random() * list.length);
-      setCharByIndex(rnd);
-    });
-    btnClear.addEventListener("click", clearCanvas);
-    btnCheck.addEventListener("click", checkDrawing);
-
-    btnToggleGuide.addEventListener("click", () => {
-      showGuide = !showGuide;
-      btnToggleGuide.textContent = showGuide ? "👁 Vorlage aus" : "👁 Vorlage an";
-      clearCanvas();
-    });
-
-    charSelect.addEventListener("change", () => {
-      const i = parseInt(charSelect.value, 10) || 0;
-      setCharByIndex(i);
-    });
-
-    modeButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        setMode(btn.dataset.mode);
+      $$('.sw').forEach(el => {
+        el.style.background = el.dataset.color;
+        el.addEventListener('click', () => {
+          isEraser = false;
+          eraserOn.textContent = 'Aus';
+          eraserBtn.classList.remove('primary');
+          setColorUI(el.dataset.color);
+          setBrushStyle();
+        });
       });
-    });
 
-    window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 150));
+      $('#reload').addEventListener('click', () => location.reload());
+      $('#btn-home').addEventListener('click', () => location.href = computeHomeHref());
+      coinsPill.addEventListener('click', () => bump(coinsPill));
 
-    function init() {
-      setMode("upper");
-      fillCharSelect();
-      setCharByIndex(0);
-      resizeCanvas();
-    }
-    init();
+      // ===== Load template image =====
+      const init = () => {
+        updateCoins();
+        updateProgress();
+
+        tplVal.textContent = `${tpl.value}%`;
+        brushVal.textContent = brush.value;
+
+        setColorUI('#1f2a2e');
+        setBrushStyle();
+
+        // load image from same folder
+        templateImg.onload = () => renderTask();
+        templateImg.onerror = () => {
+          showFeedback('⚠️', `<strong>Bild fehlt.</strong> Lege <strong>abcnachspuren.jpg</strong> in denselben Ordner wie diese index.html.`);
+        };
+        templateImg.src = './abcnachspuren.jpg';
+      };
+
+      init();
+    })();
   </script>
 </body>
 </html>
