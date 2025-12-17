@@ -72,9 +72,21 @@
 
     /* Main Action Button */
     .main-action{padding:var(--s-2) var(--s-3)}
+    
+    /* Coverage Display */
+    .coverage-display{display:flex;gap:var(--s-3);margin-bottom:var(--s-2);justify-content:center}
+    .coverage-item{display:flex;align-items:center;gap:6px;flex:1;max-width:140px}
+    .coverage-letter{font-size:var(--text-lg);font-weight:900;min-width:24px;text-align:center}
+    .coverage-bar{flex:1;height:12px;background:var(--bg-muted);border:2px solid var(--ink-primary);border-radius:6px;overflow:hidden}
+    .coverage-fill{height:100%;background:var(--color-error);border-radius:4px;transition:width 0.2s,background 0.3s;width:0}
+    .coverage-fill.good{background:var(--color-success)}
+    .coverage-pct{font-size:var(--text-xs);font-weight:900;min-width:32px;color:var(--ink-secondary)}
+    
     .btn-main{width:100%;min-height:56px;border-radius:var(--radius-md);border:3px solid var(--ink-primary);background:var(--color-success);color:white;font-family:var(--font);font-weight:900;font-size:var(--text-lg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--s-1);transition:all var(--motion-fast)}
     .btn-main:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft)}
     .btn-main:active{transform:translateY(0)}
+    .btn-main.ready{animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
     /* Feedback Toast */
     .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink-primary);color:white;padding:var(--s-2) var(--s-3);border-radius:var(--radius-md);font-weight:900;font-size:var(--text-sm);opacity:0;transition:all 0.3s var(--ease-out);z-index:100;text-align:center;max-width:90%}
@@ -165,6 +177,18 @@
 
     <!-- Main Action -->
     <div class="main-action">
+      <div class="coverage-display" id="coverage-display">
+        <div class="coverage-item">
+          <span class="coverage-letter" id="cov-upper">A</span>
+          <div class="coverage-bar"><div class="coverage-fill" id="cov-upper-fill"></div></div>
+          <span class="coverage-pct" id="cov-upper-pct">0%</span>
+        </div>
+        <div class="coverage-item">
+          <span class="coverage-letter" id="cov-lower">a</span>
+          <div class="coverage-bar"><div class="coverage-fill" id="cov-lower-fill"></div></div>
+          <span class="coverage-pct" id="cov-lower-pct">0%</span>
+        </div>
+      </div>
       <button class="btn-main" id="done-btn" type="button">✓ Fertig – Weiter</button>
     </div>
 
@@ -239,6 +263,12 @@
     $('#letter-num').textContent=`${state.idx+1} von ${LETTERS.length}`;
     $('#coins').textContent=getInt(LS.coins,0);
     $('#done-count').textContent=state.done.size;
+    
+    // Coverage letters
+    $('#cov-upper').textContent=letter.u;
+    $('#cov-lower').textContent=letter.l;
+    $('#cov-upper').style.color=letter.c;
+    $('#cov-lower').style.color=letter.c;
     
     // Progress dots
     $('#progress-dots').innerHTML=LETTERS.map((l,i)=>
@@ -324,6 +354,14 @@
   const clearDraw=()=>{
     drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
     state.undoStack=[];
+    // Reset coverage display
+    $('#cov-upper-fill').style.width='0%';
+    $('#cov-lower-fill').style.width='0%';
+    $('#cov-upper-fill').classList.remove('good');
+    $('#cov-lower-fill').classList.remove('good');
+    $('#cov-upper-pct').textContent='0%';
+    $('#cov-lower-pct').textContent='0%';
+    $('#done-btn').classList.remove('ready');
   };
 
   const pushUndo=()=>{
@@ -364,17 +402,124 @@
     drawCtx.moveTo(p.x,p.y);
   });
 
-  const endDraw=()=>state.painting=false;
+  const endDraw=()=>{
+    if(state.painting){
+      state.painting=false;
+      updateCoverage(); // Update when stroke ends
+    }
+  };
   drawCanvas.addEventListener('pointerup',endDraw);
   drawCanvas.addEventListener('pointercancel',endDraw);
   drawCanvas.addEventListener('pointerleave',endDraw);
 
-  // Check if drawn
-  const hasDrawn=()=>{
-    const d=drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height).data;
-    let c=0;
-    for(let i=3;i<d.length;i+=4)if(d[i]>20)c++;
-    return c/(drawCanvas.width*drawCanvas.height)>0.003;
+  // ===== RICHTIGKEITSPRÜFUNG =====
+  // Prüft ob mindestens 70% der Buchstaben-Pixel überdeckt wurden
+  
+  const getLetterMask=()=>{
+    // Temporäres Canvas für Buchstaben-Maske (nur die Buchstaben, keine Linien)
+    const tempCanvas=document.createElement('canvas');
+    tempCanvas.width=bgCanvas.width;
+    tempCanvas.height=bgCanvas.height;
+    const tempCtx=tempCanvas.getContext('2d');
+    
+    const letter=LETTERS[state.idx];
+    const cw=tempCanvas.width,ch=tempCanvas.height;
+    
+    const topY=ch*0.12,midY=ch*0.42,baseY=ch*0.70,descY=ch*0.90;
+    const upperH=baseY-topY,xH=baseY-midY,descH=descY-baseY;
+    
+    tempCtx.fillStyle='#000000';
+    tempCtx.textAlign='center';
+    tempCtx.textBaseline='alphabetic';
+    
+    // Großbuchstabe
+    const uSize=upperH*1.0;
+    tempCtx.font=`700 ${uSize}px Nunito,sans-serif`;
+    tempCtx.fillText(letter.u,cw*0.3,baseY);
+    
+    // Kleinbuchstabe
+    let lSize;
+    if(ASCENDERS.has(letter.l))lSize=upperH*1.0;
+    else if(DESCENDERS.has(letter.l))lSize=(xH+descH)*0.9;
+    else lSize=xH*1.35;
+    
+    tempCtx.font=`700 ${lSize}px Nunito,sans-serif`;
+    tempCtx.fillText(letter.l,cw*0.7,baseY);
+    
+    return tempCtx.getImageData(0,0,cw,ch);
+  };
+  
+  const checkAccuracy=()=>{
+    const cw=drawCanvas.width,ch=drawCanvas.height;
+    
+    // Buchstaben-Maske holen
+    const maskData=getLetterMask().data;
+    
+    // Zeichnung holen
+    const drawData=drawCtx.getImageData(0,0,cw,ch).data;
+    
+    // Zähle Buchstaben-Pixel und überlappende Pixel
+    // Teile in links (Großbuchstabe) und rechts (Kleinbuchstabe)
+    const midX=cw*0.5;
+    
+    let upperTotal=0,upperCovered=0;
+    let lowerTotal=0,lowerCovered=0;
+    
+    for(let y=0;y<ch;y++){
+      for(let x=0;x<cw;x++){
+        const i=(y*cw+x)*4;
+        const maskAlpha=maskData[i+3]; // Alpha des Buchstabens
+        
+        if(maskAlpha>50){ // Ist Teil des Buchstabens
+          const drawAlpha=drawData[i+3]; // Alpha der Zeichnung
+          const isCovered=drawAlpha>30; // Wurde hier gezeichnet?
+          
+          if(x<midX){
+            // Großbuchstabe (links)
+            upperTotal++;
+            if(isCovered)upperCovered++;
+          }else{
+            // Kleinbuchstabe (rechts)
+            lowerTotal++;
+            if(isCovered)lowerCovered++;
+          }
+        }
+      }
+    }
+    
+    // Prozentsatz berechnen
+    const upperPercent=upperTotal>0?(upperCovered/upperTotal)*100:0;
+    const lowerPercent=lowerTotal>0?(lowerCovered/lowerTotal)*100:0;
+    
+    return{
+      upperPercent:Math.round(upperPercent),
+      lowerPercent:Math.round(lowerPercent),
+      upperOk:upperPercent>=70,
+      lowerOk:lowerPercent>=70,
+      bothOk:upperPercent>=70&&lowerPercent>=70
+    };
+  };
+
+  // Update coverage display
+  const updateCoverage=()=>{
+    const result=checkAccuracy();
+    const letter=LETTERS[state.idx];
+    
+    $('#cov-upper').textContent=letter.u;
+    $('#cov-lower').textContent=letter.l;
+    $('#cov-upper').style.color=letter.c;
+    $('#cov-lower').style.color=letter.c;
+    
+    $('#cov-upper-fill').style.width=Math.min(100,result.upperPercent)+'%';
+    $('#cov-lower-fill').style.width=Math.min(100,result.lowerPercent)+'%';
+    $('#cov-upper-fill').classList.toggle('good',result.upperOk);
+    $('#cov-lower-fill').classList.toggle('good',result.lowerOk);
+    
+    $('#cov-upper-pct').textContent=result.upperPercent+'%';
+    $('#cov-lower-pct').textContent=result.lowerPercent+'%';
+    
+    // Button visuell hervorheben wenn fertig
+    $('#done-btn').classList.toggle('ready',result.bothOk);
   };
 
   // Events
@@ -384,6 +529,7 @@
   $('#undo-btn').onclick=()=>{
     if(state.undoStack.length){
       drawCtx.putImageData(state.undoStack.pop(),0,0);
+      updateCoverage();
     }
   };
 
@@ -419,12 +565,24 @@
   };
 
   $('#done-btn').onclick=()=>{
-    if(!hasDrawn()){
-      showToast('✏️ Erst nachspuren!','error');
+    const result=checkAccuracy();
+    const letter=LETTERS[state.idx];
+    
+    // Prüfe ob beide Buchstaben zu mindestens 70% nachgespurt
+    if(!result.bothOk){
+      let msg='';
+      if(!result.upperOk&&!result.lowerOk){
+        msg=`✏️ Spur beide Buchstaben nach!\n${letter.u}: ${result.upperPercent}% | ${letter.l}: ${result.lowerPercent}%`;
+      }else if(!result.upperOk){
+        msg=`✏️ ${letter.u} fehlt noch! (${result.upperPercent}% von 70%)`;
+      }else{
+        msg=`✏️ ${letter.l} fehlt noch! (${result.lowerPercent}% von 70%)`;
+      }
+      showToast(msg,'error');
       return;
     }
     
-    const letter=LETTERS[state.idx];
+    // Erfolgreich!
     const isNew=!state.done.has(letter.id);
     
     if(isNew){
@@ -432,9 +590,9 @@
       setSet(LS.done,state.done);
       const coins=getInt(LS.coins,0)+1;
       setInt(LS.coins,coins);
-      showToast(`⭐ ${letter.u} geschafft! +1`,'success');
+      showToast(`⭐ ${letter.u}${letter.l} geschafft! +1`,'success');
     }else{
-      showToast(`✨ ${letter.u} geübt!`,'success');
+      showToast(`✨ ${letter.u}${letter.l} geübt!`,'success');
     }
     
     // Next letter
@@ -442,7 +600,7 @@
       state.idx=(state.idx+1)%LETTERS.length;
       setInt(LS.idx,state.idx);
       render();
-    },800);
+    },1000);
   };
 
   // Resize
