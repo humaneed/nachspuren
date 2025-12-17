@@ -7,6 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Alphabet Nachspuren – Kidsneed</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- Schulschrift-ähnliche Schrift für Buchstaben -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --s-1:8px;--s-2:16px;--s-3:24px;--s-4:32px;
@@ -21,12 +23,16 @@
       --text-2xl:24px;--text-xl:20px;--text-lg:18px;--text-md:16px;--text-sm:14px;--text-xs:12px;
       --motion-fast:150ms;--ease-out:cubic-bezier(0.33,1,0.68,1);
       --app-max-w:600px;--font:'Nunito',system-ui,sans-serif;
+      /* Linienfarben */
+      --line-base:#C4726C;
+      --line-mid:#4A7C91;
+      --line-top:#7BA08A;
+      --line-light:rgba(0,0,0,0.08);
     }
     *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
     body{margin:0;background:var(--bg-canvas);color:var(--ink-primary);font-family:var(--font);font-weight:600;font-size:var(--text-md);line-height:1.5;display:flex;align-items:center;justify-content:center;overflow:hidden}
     *:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
-    @media(prefers-reduced-motion:reduce){*{transition-duration:0.01ms!important;animation-duration:0.01ms!important}}
 
     .app-frame{width:100%;height:100%;background:var(--bg-card);display:flex;flex-direction:column;overflow:hidden;position:relative}
     @media(min-width:520px){body{padding:var(--s-3)}.app-frame{max-width:var(--app-max-w);height:94dvh;max-height:940px;border:3px solid var(--ink-primary);border-radius:var(--radius-lg);box-shadow:var(--shadow-subtle)}}
@@ -74,14 +80,22 @@
     .word-label{font-size:var(--text-xs);font-weight:900;color:var(--ink-secondary);margin-top:var(--s-1);text-transform:uppercase;letter-spacing:.08em}
 
     /* Canvas Stage */
-    .stage{border:3px solid var(--ink-primary);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-card)}
+    .stage{border:3px solid var(--ink-primary);border-radius:var(--radius-md);overflow:hidden;background:#FFFEF9}
     .stage-header{padding:12px 14px;border-bottom:3px solid var(--ink-primary);background:var(--bg-muted);display:flex;align-items:center;justify-content:space-between;gap:var(--s-2);flex-wrap:wrap}
     .stage-info{display:flex;align-items:center;gap:var(--s-2)}
-    .big-letter{font-size:var(--text-2xl);font-weight:900;color:var(--accent);min-width:40px;text-align:center}
+    .big-letter{font-size:var(--text-2xl);font-weight:900;color:var(--accent);min-width:50px;text-align:center}
     .stage-hint{font-size:var(--text-xs);font-weight:900;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.08em}
     .stage-score{font-size:var(--text-sm);font-weight:900;color:var(--ink-secondary)}
 
-    .canvas-wrap{position:relative;width:100%;background:#fff;touch-action:none}
+    /* Linien-Legende */
+    .lines-legend{display:flex;gap:var(--s-2);font-size:var(--text-xs);font-weight:900;flex-wrap:wrap}
+    .legend-item{display:flex;align-items:center;gap:4px}
+    .legend-line{width:20px;height:3px;border-radius:2px}
+    .legend-line.top{background:var(--line-top)}
+    .legend-line.mid{background:var(--line-mid)}
+    .legend-line.base{background:var(--line-base)}
+
+    .canvas-wrap{position:relative;width:100%;background:#FFFEF9;touch-action:none}
     canvas{display:block;width:100%;height:auto}
     #bgCanvas{position:relative;z-index:1}
     #drawCanvas{position:absolute;inset:0;z-index:2}
@@ -190,10 +204,14 @@
           <div class="stage">
             <div class="stage-header">
               <div class="stage-info">
-                <div class="big-letter" id="big-letter">A</div>
+                <div class="big-letter" id="big-letter">A a</div>
                 <div class="stage-hint" id="stage-hint">Spur den Buchstaben nach</div>
               </div>
-              <div class="stage-score">Score: <span id="score">–</span></div>
+              <div class="lines-legend">
+                <div class="legend-item"><div class="legend-line top"></div><span>Oben</span></div>
+                <div class="legend-item"><div class="legend-line mid"></div><span>Mitte</span></div>
+                <div class="legend-item"><div class="legend-line base"></div><span>Grund</span></div>
+              </div>
             </div>
             <div class="canvas-wrap" id="canvas-wrap">
               <canvas id="bgCanvas"></canvas>
@@ -201,10 +219,16 @@
             </div>
           </div>
 
-          <!-- Visibility Toggle -->
-          <div class="toggle-row" style="margin-top:var(--s-2)">
-            <span class="toggle-label">👁️ Vorlage anzeigen</span>
-            <div class="toggle on" id="toggle-template" role="switch" tabindex="0"></div>
+          <!-- Toggles -->
+          <div style="display:flex;gap:var(--s-3);margin-top:var(--s-2);flex-wrap:wrap">
+            <div class="toggle-row" style="flex:1">
+              <span class="toggle-label">👁️ Buchstabe zeigen</span>
+              <div class="toggle on" id="toggle-letter" role="switch" tabindex="0"></div>
+            </div>
+            <div class="toggle-row" style="flex:1">
+              <span class="toggle-label">📏 Linien zeigen</span>
+              <div class="toggle on" id="toggle-lines" role="switch" tabindex="0"></div>
+            </div>
           </div>
         </section>
 
@@ -215,9 +239,9 @@
               <div class="control-box">
                 <div class="control-label">
                   <span>🖌️ Pinselgröße</span>
-                  <span class="control-value" id="brush-val">18</span>
+                  <span class="control-value" id="brush-val">12</span>
                 </div>
-                <input type="range" id="brush-size" min="6" max="40" value="18">
+                <input type="range" id="brush-size" min="4" max="30" value="12">
                 <div class="toggle-row">
                   <span class="toggle-label">🧽 Radierer</span>
                   <div class="toggle" id="toggle-eraser" role="switch" tabindex="0"></div>
@@ -265,8 +289,6 @@
     </footer>
   </div>
 
-  <img id="template-img" alt="" style="display:none">
-
   <script>
 (()=>{
   'use strict';
@@ -280,53 +302,52 @@
   const getArr=(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):[]}catch{return[]}};
   const setArr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 
-  // ===== TASKS DATA =====
-  // Buchstaben-Boxen aus dem Bild (Koordinaten im Originalbild 1069x1500)
+  // ===== BUCHSTABEN-DATEN =====
+  // Jeder Buchstabe hat: id, groß, klein, Farbe (aus dem Bild)
   const LETTERS=[
-    {id:'Aa',label:'A a',box:[37,220,203,358]},
-    {id:'Bb',label:'B b',box:[245,220,406,358]},
-    {id:'Cc',label:'C c',box:[447,220,608,358]},
-    {id:'Dd',label:'D d',box:[652,220,824,358]},
-    {id:'Ee',label:'E e',box:[866,220,1019,358]},
-    {id:'Ff',label:'F f',box:[39,428,175,582]},
-    {id:'Gg',label:'G g',box:[236,428,407,582]},
-    {id:'Hh',label:'H h',box:[445,428,604,582]},
-    {id:'Ii',label:'I i',box:[699,428,781,582]},
-    {id:'Jj',label:'J j',box:[893,428,995,582]},
-    {id:'Kk',label:'K k',box:[40,636,190,774]},
-    {id:'Ll',label:'L l',box:[241,636,366,774]},
-    {id:'Mm',label:'M m',box:[416,636,639,774]},
-    {id:'Nn',label:'N n',box:[654,636,822,774]},
-    {id:'Oo',label:'O o',box:[859,636,1035,774]},
-    {id:'Pp',label:'P p',box:[41,844,196,983]},
-    {id:'Qq',label:'Q q',box:[241,844,409,983]},
-    {id:'Rr',label:'R r',box:[452,844,578,983]},
-    {id:'Ss',label:'S s',box:[668,844,808,983]},
-    {id:'Tt',label:'T t',box:[875,844,1005,983]},
-    {id:'Uu',label:'U u',box:[0,1051,201,1191]},
-    {id:'Vv',label:'V v',box:[235,1051,402,1191]},
-    {id:'Ww',label:'W w',box:[421,1051,637,1191]},
-    {id:'Xx',label:'X x',box:[667,1051,811,1191]},
-    {id:'Yy',label:'Y y',box:[878,1051,1014,1191]},
-    {id:'Zz',label:'Z z',box:[39,1254,197,1400]},
-    {id:'Ää',label:'Ä ä',box:[247,1254,403,1400]},
-    {id:'Öö',label:'Ö ö',box:[444,1254,618,1400]},
-    {id:'Üü',label:'Ü ü',box:[656,1254,826,1400]},
-    {id:'ß',label:'ß',box:[905,1254,993,1400]}
+    {id:'A',upper:'A',lower:'a',color:'#D4976A'},
+    {id:'B',upper:'B',lower:'b',color:'#A67B5B'},
+    {id:'C',upper:'C',lower:'c',color:'#E8A84C'},
+    {id:'D',upper:'D',lower:'d',color:'#F5C04A'},
+    {id:'E',upper:'E',lower:'e',color:'#E8D174'},
+    {id:'F',upper:'F',lower:'f',color:'#8B6B4A'},
+    {id:'G',upper:'G',lower:'g',color:'#6B8E6B'},
+    {id:'H',upper:'H',lower:'h',color:'#4A8B8B'},
+    {id:'I',upper:'I',lower:'i',color:'#5BA3A3'},
+    {id:'J',upper:'J',lower:'j',color:'#7B9EB8'},
+    {id:'K',upper:'K',lower:'k',color:'#5B8B7B'},
+    {id:'L',upper:'L',lower:'l',color:'#7BA08A'},
+    {id:'M',upper:'M',lower:'m',color:'#C4A864'},
+    {id:'N',upper:'N',lower:'n',color:'#6B7BA0'},
+    {id:'O',upper:'O',lower:'o',color:'#8BA0C4'},
+    {id:'P',upper:'P',lower:'p',color:'#7B6B90'},
+    {id:'Q',upper:'Q',lower:'q',color:'#6B5B80'},
+    {id:'R',upper:'R',lower:'r',color:'#A06B8B'},
+    {id:'S',upper:'S',lower:'s',color:'#D4A0A0'},
+    {id:'T',upper:'T',lower:'t',color:'#C4726C'},
+    {id:'U',upper:'U',lower:'u',color:'#E8A060'},
+    {id:'V',upper:'V',lower:'v',color:'#D4A574'},
+    {id:'W',upper:'W',lower:'w',color:'#C49840'},
+    {id:'X',upper:'X',lower:'x',color:'#8090A0'},
+    {id:'Y',upper:'Y',lower:'y',color:'#606B70'},
+    {id:'Z',upper:'Z',lower:'z',color:'#505860'},
+    {id:'Ä',upper:'Ä',lower:'ä',color:'#606060'},
+    {id:'Ö',upper:'Ö',lower:'ö',color:'#707070'},
+    {id:'Ü',upper:'Ü',lower:'ü',color:'#505050'},
+    {id:'ß',upper:'ß',lower:'ß',color:'#404040'}
   ];
 
-  // Wörter für den Wort-Modus (nach Schwierigkeit sortiert)
+  // Wörter für den Wort-Modus
   const WORDS=[
     {word:'OMA',hint:'Familie'},
     {word:'OPA',hint:'Familie'},
     {word:'EIS',hint:'Lecker!'},
-    {word:'UHU',hint:'Klebstoff'},
-    {word:'BUS',hint:'Fahrzeug'},
-    {word:'HUT',hint:'Kleidung'},
-    {word:'RAD',hint:'Fahrzeug'},
     {word:'ARM',hint:'Körperteil'},
     {word:'OHR',hint:'Körperteil'},
     {word:'ROT',hint:'Farbe'},
+    {word:'HUT',hint:'Kleidung'},
+    {word:'BUS',hint:'Fahrzeug'},
+    {word:'RAD',hint:'Fahrzeug'},
     {word:'BALL',hint:'Spielzeug'},
     {word:'HAUS',hint:'Gebäude'},
     {word:'BAUM',hint:'Natur'},
@@ -345,44 +366,34 @@
     {word:'SCHULE',hint:'Lernen'},
     {word:'KINDER',hint:'Mehrzahl'},
     {word:'WASSER',hint:'Trinken'},
-    {word:'ELEFANT',hint:'Tier'},
-    {word:'SCHMETTERLING',hint:'Insekt'}
+    {word:'ÄPFEL',hint:'Obst'},
+    {word:'LÖWE',hint:'Tier'},
+    {word:'MÜTZE',hint:'Kleidung'}
   ];
 
-  // Buchstaben-Map für schnellen Zugriff
+  // Buchstaben-Map
   const LETTER_MAP={};
-  LETTERS.forEach((l,i)=>{
-    const upper=l.id.charAt(0).toUpperCase();
-    LETTER_MAP[upper]=i;
-    if(l.id.length>1){
-      const lower=l.id.charAt(1).toLowerCase();
-      if(lower!==upper.toLowerCase())LETTER_MAP[lower]=i;
-    }
-  });
-  // Sonderzeichen
-  LETTER_MAP['Ä']=26;LETTER_MAP['ä']=26;
-  LETTER_MAP['Ö']=27;LETTER_MAP['ö']=27;
-  LETTER_MAP['Ü']=28;LETTER_MAP['ü']=28;
-  LETTER_MAP['ß']=29;
+  LETTERS.forEach((l,i)=>{LETTER_MAP[l.id]=i;LETTER_MAP[l.id.toLowerCase()]=i});
 
   // ===== STATE =====
   const state={
-    mode:'letter', // 'letter' oder 'word'
+    mode:'letter',
     letterIdx:Math.min(getInt(LS.lastIdx,0),LETTERS.length-1),
     wordIdx:0,
     wordCharIdx:0,
     lettersDone:new Set(getArr(LS.lettersDone)),
     wordsDone:new Set(getArr(LS.wordsDone)),
-    templateVisible:true,
+    showLetter:true,
+    showLines:true,
     isEraser:false,
     brushColor:'#2D2A26',
-    brushSize:18,
+    brushSize:12,
     undoStack:[],
     painting:false,
     lastPos:null
   };
 
-  // ===== DOM ELEMENTS =====
+  // ===== DOM =====
   const coinCount=$('#coin-count');
   const progressLabel=$('#progress-label');
   const progressCounter=$('#progress-counter');
@@ -392,7 +403,6 @@
   const wordHint=$('#word-hint');
   const bigLetter=$('#big-letter');
   const stageHint=$('#stage-hint');
-  const scoreEl=$('#score');
   const feedback=$('#feedback');
   const feedbackIcon=$('#feedback-icon');
   const feedbackText=$('#feedback-text');
@@ -401,10 +411,8 @@
   const canvasWrap=$('#canvas-wrap');
   const bgCtx=bgCanvas.getContext('2d',{willReadFrequently:true});
   const drawCtx=drawCanvas.getContext('2d',{willReadFrequently:true});
-  const templateImg=$('#template-img');
 
   let dpr=Math.max(1,Math.min(3,window.devicePixelRatio||1));
-  let maskData=null,maskW=0,maskH=0;
   const UNDO_MAX=15;
 
   // ===== HELPERS =====
@@ -448,7 +456,7 @@
   // ===== CANVAS SETUP =====
   const fitCanvas=()=>{
     const w=canvasWrap.clientWidth;
-    const h=Math.max(260,Math.min(380,Math.round(w*0.62)));
+    const h=Math.max(220,Math.min(320,Math.round(w*0.5)));
     bgCanvas.style.height=h+'px';
     drawCanvas.style.height=h+'px';
     bgCanvas.width=Math.round(w*dpr);
@@ -457,89 +465,143 @@
     drawCanvas.height=Math.round(h*dpr);
   };
 
-  // ===== RENDER LETTER =====
+  // ===== BUCHSTABEN-KATEGORIEN =====
+  // Kleinbuchstaben mit Unterlängen (gehen unter die Grundlinie)
+  const DESCENDERS = new Set(['g','j','p','q','y']);
+  // Kleinbuchstaben mit Oberlängen (gehen bis Oberlinie)
+  const ASCENDERS = new Set(['b','d','f','h','k','l','t','ß']);
+  // Kleinbuchstaben nur x-Höhe (zwischen Grund- und Mittellinie)
+  const XHEIGHT = new Set(['a','c','e','i','m','n','o','r','s','u','v','w','x','z','ä','ö','ü']);
+
+  // ===== ZEICHNE LINIEN UND BUCHSTABEN =====
   const renderLetter=(idx)=>{
     if(idx<0||idx>=LETTERS.length)return;
     const letter=LETTERS[idx];
-    bigLetter.textContent=letter.label;
     
+    // UI Update
+    bigLetter.textContent=`${letter.upper} ${letter.lower}`;
+    bigLetter.style.color=letter.color;
     const isDone=state.lettersDone.has(letter.id);
     stageHint.textContent=isDone?'✅ Bereits geschafft':'Spur den Buchstaben nach';
     
     hideFeedback();
-    scoreEl.textContent='–';
     clearDrawing(true);
     fitCanvas();
 
-    const [x0,y0,x1,y1]=letter.box;
-    const sw=x1-x0,sh=y1-y0;
+    const cw=bgCanvas.width;
+    const ch=bgCanvas.height;
 
     bgCtx.save();
     bgCtx.setTransform(1,0,0,1,0,0);
-    bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
-    bgCtx.fillStyle='#ffffff';
-    bgCtx.fillRect(0,0,bgCanvas.width,bgCanvas.height);
+    bgCtx.clearRect(0,0,cw,ch);
+    
+    // Hintergrund (leicht getönt wie Schulheft)
+    bgCtx.fillStyle='#FFFEF9';
+    bgCtx.fillRect(0,0,cw,ch);
 
-    const pad=16*dpr;
-    const cw=bgCanvas.width,ch=bgCanvas.height;
-    const availW=cw-pad*2,availH=ch-pad*2;
-    const scale=Math.min(availW/sw,availH/sh);
-    const dw=sw*scale,dh=sh*scale;
-    const dx=(cw-dw)/2,dy=(ch-dh)/2;
+    // ===== LINIEN-POSITIONEN (fest definiert) =====
+    const margin=20*dpr;
+    
+    // Vertikale Positionen der Linien (von oben nach unten)
+    const topY = ch * 0.15;      // Oberlinie (Großbuchstaben/Oberlängen)
+    const midY = ch * 0.45;      // Mittellinie (x-Höhe Kleinbuchstaben)
+    const baseY = ch * 0.72;     // Grundlinie (Schreiblinie)
+    const descY = ch * 0.92;     // Unterlängen-Linie
+    
+    // Abstände berechnen
+    const upperHeight = baseY - topY;    // Höhe Großbuchstaben
+    const xHeight = baseY - midY;        // Höhe Kleinbuchstaben (x-Höhe)
+    const descHeight = descY - baseY;    // Unterlängen
 
-    // Vorlage nur zeichnen wenn sichtbar
-    if(state.templateVisible&&templateImg.complete&&templateImg.naturalWidth>0){
-      bgCtx.globalAlpha=0.85;
-      bgCtx.imageSmoothingEnabled=true;
-      bgCtx.imageSmoothingQuality='high';
-      bgCtx.drawImage(templateImg,x0,y0,sw,sh,dx,dy,dw,dh);
-      bgCtx.globalAlpha=1;
+    if(state.showLines){
+      bgCtx.lineWidth=2*dpr;
+      
+      // Oberlinie (grün, gestrichelt) - Großbuchstaben-Oberkante
+      bgCtx.strokeStyle='rgba(123,160,138,0.7)';
+      bgCtx.setLineDash([10*dpr,5*dpr]);
+      bgCtx.beginPath();
+      bgCtx.moveTo(margin,topY);
+      bgCtx.lineTo(cw-margin,topY);
+      bgCtx.stroke();
+      
+      // Mittellinie (blau, gestrichelt) - Kleinbuchstaben-Oberkante
+      bgCtx.strokeStyle='rgba(74,124,145,0.7)';
+      bgCtx.setLineDash([10*dpr,5*dpr]);
+      bgCtx.beginPath();
+      bgCtx.moveTo(margin,midY);
+      bgCtx.lineTo(cw-margin,midY);
+      bgCtx.stroke();
+      
+      // Grundlinie (rot, durchgezogen) - Schreiblinie
+      bgCtx.strokeStyle='rgba(196,114,108,0.9)';
+      bgCtx.setLineDash([]);
+      bgCtx.lineWidth=3*dpr;
+      bgCtx.beginPath();
+      bgCtx.moveTo(margin,baseY);
+      bgCtx.lineTo(cw-margin,baseY);
+      bgCtx.stroke();
+
+      // Unterlängen-Linie (grau, gestrichelt)
+      bgCtx.strokeStyle='rgba(0,0,0,0.2)';
+      bgCtx.lineWidth=2*dpr;
+      bgCtx.setLineDash([6*dpr,4*dpr]);
+      bgCtx.beginPath();
+      bgCtx.moveTo(margin,descY);
+      bgCtx.lineTo(cw-margin,descY);
+      bgCtx.stroke();
     }
 
-    // Rahmen
-    bgCtx.lineWidth=2*dpr;
-    bgCtx.strokeStyle='rgba(45,42,38,.15)';
-    bgCtx.strokeRect(dx,dy,dw,dh);
-    bgCtx.restore();
-
-    // Maske für Scoring bauen
-    buildMask(x0,y0,sw,sh);
-    LETTERS[idx]._map={dx,dy,dw,dh};
-  };
-
-  const buildMask=(x0,y0,sw,sh)=>{
-    const mw=200,mh=200;
-    maskW=mw;maskH=mh;
-    const off=document.createElement('canvas');
-    off.width=mw;off.height=mh;
-    const oc=off.getContext('2d',{willReadFrequently:true});
-    oc.clearRect(0,0,mw,mh);
-    if(templateImg.complete&&templateImg.naturalWidth>0){
-      oc.drawImage(templateImg,x0,y0,sw,sh,0,0,mw,mh);
-    }
-    const imgd=oc.getImageData(0,0,mw,mh).data;
-    const m=new Uint8Array(mw*mh);
-    for(let i=0,p=0;i<imgd.length;i+=4,p++){
-      const r=imgd[i],g=imgd[i+1],b=imgd[i+2];
-      const br=(r+g+b)/3;
-      const sat=Math.max(r,g,b)-Math.min(r,g,b);
-      m[p]=(br<220||sat>25)?1:0;
-    }
-    // Dilation
-    const dil=new Uint8Array(mw*mh);
-    const rad=2;
-    for(let y=0;y<mh;y++){
-      for(let x=0;x<mw;x++){
-        let on=0;
-        for(let yy=Math.max(0,y-rad);yy<=Math.min(mh-1,y+rad)&&!on;yy++){
-          for(let xx=Math.max(0,x-rad);xx<=Math.min(mw-1,x+rad);xx++){
-            if(m[yy*mw+xx]){on=1;break}
-          }
-        }
-        dil[y*mw+x]=on;
+    // ===== BUCHSTABE ZEICHNEN =====
+    if(state.showLetter){
+      bgCtx.setLineDash([]);
+      bgCtx.textAlign='center';
+      
+      // Buchstabenfarbe (halbtransparent zum Nachspuren)
+      bgCtx.fillStyle=letter.color+'88'; // 53% opacity
+      bgCtx.strokeStyle=letter.color;
+      bgCtx.lineWidth=2*dpr;
+      
+      // ===== GROßBUCHSTABE (links) =====
+      // Großbuchstaben gehen von Grundlinie bis Oberlinie
+      const upperFontSize = upperHeight * 1.05; // Etwas größer für optischen Ausgleich
+      bgCtx.font=`600 ${upperFontSize}px 'Nunito', sans-serif`;
+      bgCtx.textBaseline='alphabetic';
+      
+      const upperX = cw * 0.28;
+      bgCtx.fillText(letter.upper, upperX, baseY);
+      bgCtx.strokeText(letter.upper, upperX, baseY);
+      
+      // ===== KLEINBUCHSTABE (rechts) =====
+      const lowerX = cw * 0.72;
+      const lowerChar = letter.lower;
+      
+      // Schriftgröße je nach Buchstabentyp
+      let lowerFontSize;
+      let lowerBaseline = baseY;
+      
+      if(ASCENDERS.has(lowerChar)){
+        // Oberlängen: gleiche Höhe wie Großbuchstaben
+        lowerFontSize = upperHeight * 1.05;
+      } else if(DESCENDERS.has(lowerChar)){
+        // Unterlängen: x-Höhe + Unterlänge
+        lowerFontSize = (xHeight + descHeight) * 0.95;
+      } else {
+        // Normale x-Höhe Buchstaben
+        lowerFontSize = xHeight * 1.4; // Optischer Ausgleich
       }
+      
+      bgCtx.font=`600 ${lowerFontSize}px 'Nunito', sans-serif`;
+      bgCtx.fillText(lowerChar, lowerX, lowerBaseline);
+      bgCtx.strokeText(lowerChar, lowerX, lowerBaseline);
+
+      // Pfeil zwischen Groß und Klein
+      bgCtx.fillStyle='rgba(0,0,0,0.25)';
+      bgCtx.font=`400 ${20*dpr}px sans-serif`;
+      bgCtx.textBaseline='middle';
+      bgCtx.fillText('→', cw*0.5, (topY+baseY)/2);
     }
-    maskData=dil;
+
+    bgCtx.restore();
   };
 
   // ===== WORD MODE =====
@@ -572,7 +634,6 @@
     const w=WORDS[state.wordIdx];
     state.wordCharIdx++;
     if(state.wordCharIdx>=w.word.length){
-      // Wort fertig
       if(!state.wordsDone.has(w.word)){
         state.wordsDone.add(w.word);
         addCoin(w.word.length);
@@ -582,7 +643,6 @@
       }
       saveState();
       updateProgress();
-      // Nächstes Wort
       setTimeout(()=>{
         state.wordIdx=(state.wordIdx+1)%WORDS.length;
         state.wordCharIdx=0;
@@ -648,6 +708,9 @@
     setBrushStyle();
     drawCtx.beginPath();
     drawCtx.moveTo(state.lastPos.x,state.lastPos.y);
+    // Punkt zeichnen für Klick ohne Bewegung
+    drawCtx.lineTo(state.lastPos.x+0.1,state.lastPos.y+0.1);
+    drawCtx.stroke();
   };
 
   const moveDraw=(e)=>{
@@ -655,6 +718,8 @@
     const p=getPos(e);
     drawCtx.lineTo(p.x,p.y);
     drawCtx.stroke();
+    drawCtx.beginPath();
+    drawCtx.moveTo(p.x,p.y);
     state.lastPos=p;
   };
 
@@ -669,46 +734,23 @@
   drawCanvas.addEventListener('pointercancel',endDraw);
   drawCanvas.addEventListener('pointerleave',endDraw);
 
-  // ===== SCORING =====
-  const scoreDrawing=()=>{
-    const idx=state.mode==='letter'?state.letterIdx:getCurrentLetterIdxForWord();
-    const letter=LETTERS[idx];
-    if(!maskData||!letter._map)return null;
-
-    const{dx,dy,dw,dh}=letter._map;
-    const x0=Math.max(0,Math.floor(dx));
-    const y0=Math.max(0,Math.floor(dy));
-    const x1=Math.min(drawCanvas.width,Math.ceil(dx+dw));
-    const y1=Math.min(drawCanvas.height,Math.ceil(dy+dh));
-
-    let img;
-    try{img=drawCtx.getImageData(x0,y0,x1-x0,y1-y0).data}catch{return null}
-
-    let drawn=0,hit=0;
-    const w=x1-x0,h=y1-y0;
-    const step=2;
-
-    for(let y=0;y<h;y+=step){
-      for(let x=0;x<w;x+=step){
-        const i=(y*w+x)*4;
-        if(img[i+3]>10){
-          drawn++;
-          const mx=Math.min(maskW-1,Math.max(0,Math.floor(x/w*maskW)));
-          const my=Math.min(maskH-1,Math.max(0,Math.floor(y/h*maskH)));
-          if(maskData[my*maskW+mx])hit++;
-        }
-      }
+  // ===== SCORING (vereinfacht - prüft ob genug gezeichnet wurde) =====
+  const checkDrawing=()=>{
+    const img=drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height).data;
+    let drawn=0;
+    for(let i=3;i<img.length;i+=4){
+      if(img[i]>20)drawn++;
     }
-
-    if(drawn<30)return{pct:0,drawn,hit};
-    return{pct:Math.round(hit/drawn*100),drawn,hit};
+    const totalPixels=drawCanvas.width*drawCanvas.height;
+    const coverage=drawn/totalPixels*100;
+    return{coverage:coverage.toFixed(1),drawn};
   };
 
   // ===== MARK DONE =====
   const markDone=()=>{
-    const s=scoreDrawing();
-    if(s&&s.drawn>=30&&s.pct<50){
-      showFeedback('💡',`<strong>Noch nicht ganz.</strong> Treffer: ${s.pct}%. Versuch langsamer über die Linien zu malen.`,'error');
+    const check=checkDrawing();
+    if(check.coverage<0.5){
+      showFeedback('💡','<strong>Noch nicht genug!</strong> Mal den Buchstaben nach.','error');
       return;
     }
 
@@ -717,19 +759,17 @@
       if(!state.lettersDone.has(letter.id)){
         state.lettersDone.add(letter.id);
         addCoin(1);
-        showFeedback('✅',`<strong>${letter.label} geschafft!</strong> ⭐ +1`,'success');
+        showFeedback('✅',`<strong>${letter.upper} ${letter.lower} geschafft!</strong> ⭐ +1`,'success');
       }else{
-        showFeedback('✨',`<strong>Nochmal geübt!</strong> ${letter.label}`,'success');
+        showFeedback('✨',`<strong>Nochmal geübt!</strong> ${letter.upper} ${letter.lower}`,'success');
       }
       saveState();
       updateProgress();
-      // Nächster Buchstabe
       setTimeout(()=>{
         state.letterIdx=(state.letterIdx+1)%LETTERS.length;
         renderTask();
       },1000);
     }else{
-      // Word mode
       advanceWord();
     }
   };
@@ -746,10 +786,17 @@
     });
   });
 
-  // Template Toggle
-  $('#toggle-template').addEventListener('click',()=>{
-    state.templateVisible=!state.templateVisible;
-    $('#toggle-template').classList.toggle('on',state.templateVisible);
+  // Letter Toggle
+  $('#toggle-letter').addEventListener('click',()=>{
+    state.showLetter=!state.showLetter;
+    $('#toggle-letter').classList.toggle('on',state.showLetter);
+    renderTask();
+  });
+
+  // Lines Toggle
+  $('#toggle-lines').addEventListener('click',()=>{
+    state.showLines=!state.showLines;
+    $('#toggle-lines').classList.toggle('on',state.showLines);
     renderTask();
   });
 
@@ -762,7 +809,7 @@
 
   // Brush Size
   $('#brush-size').addEventListener('input',e=>{
-    state.brushSize=parseInt(e.target.value,10)||18;
+    state.brushSize=parseInt(e.target.value,10)||12;
     $('#brush-val').textContent=state.brushSize;
     setBrushStyle();
   });
@@ -819,24 +866,17 @@
 
   $('#btn-clear').addEventListener('click',()=>{
     clearDrawing(false);
-    scoreEl.textContent='–';
     showFeedback('🧼','<strong>Gelöscht.</strong> Fang nochmal an!');
   });
 
   $('#btn-check').addEventListener('click',()=>{
-    const s=scoreDrawing();
-    if(!s||s.drawn<30){
-      scoreEl.textContent='–';
-      showFeedback('🎯','<strong>Mal noch etwas mehr!</strong> Es fehlt noch Farbe.');
-      return;
-    }
-    scoreEl.textContent=s.pct+'%';
-    if(s.pct>=75){
-      showFeedback('🏆',`<strong>Sehr gut!</strong> ${s.pct}% Treffer. Super sauber!`,'success');
-    }else if(s.pct>=50){
-      showFeedback('👍',`<strong>Gut!</strong> ${s.pct}% Treffer. Noch etwas genauer!`);
+    const check=checkDrawing();
+    if(check.coverage<0.3){
+      showFeedback('🎯','<strong>Mal noch mehr!</strong> Der Buchstabe braucht mehr Farbe.');
+    }else if(check.coverage<1){
+      showFeedback('👍','<strong>Guter Anfang!</strong> Noch etwas mehr nachspuren.');
     }else{
-      showFeedback('💡',`<strong>Weiter üben!</strong> ${s.pct}% Treffer. Bleib auf der Linie.`,'error');
+      showFeedback('🏆',`<strong>Super!</strong> Du hast gut nachgespurt!`,'success');
     }
   });
 
@@ -844,10 +884,14 @@
 
   $('#btn-help').addEventListener('click',()=>{
     showFeedback('💡',`<strong>So geht's:</strong><br>
-      1️⃣ Spur den Buchstaben langsam nach<br>
-      2️⃣ Mit 👁️ Vorlage ein/ausblenden<br>
-      3️⃣ 🔍 Prüfen zeigt deinen Score<br>
-      4️⃣ ✅ Fertig speichert & gibt ⭐`);
+      1️⃣ Spur den Buchstaben auf den Linien nach<br>
+      2️⃣ 👁️ Buchstabe ein/ausblenden zum Üben<br>
+      3️⃣ 📏 Linien als Orientierung nutzen<br>
+      4️⃣ ✅ Fertig speichert & gibt ⭐<br><br>
+      <strong>Linien:</strong><br>
+      🔴 Grundlinie = hier schreiben<br>
+      🔵 Mittellinie = Kleinbuchstaben-Höhe<br>
+      🟢 Oberlinie = Großbuchstaben-Höhe`);
   });
 
   // Resize
@@ -861,20 +905,11 @@
     updateCoins();
     $('#brush-val').textContent=state.brushSize;
     setBrushStyle();
-
-    // Bild laden von GitHub
-    templateImg.onload=()=>renderTask();
-    templateImg.onerror=()=>{
-      showFeedback('⚠️','<strong>Bild lädt...</strong> Versuche es gleich nochmal.','error');
-      // Fallback: lokales Bild
-      templateImg.src='./abcnachspuren.jpg';
-    };
-    // GitHub URL
-    templateImg.src='https://raw.githubusercontent.com/humaneed/kidsneed/main/ueben/alphabet-nachspuren/abcnachspuren.jpg';
+    renderTask();
   };
 
   init();
-  console.log('✅ Alphabet Nachspuren geladen.');
+  console.log('✅ Alphabet Nachspuren v2 geladen.');
 })();
   </script>
 </body>
